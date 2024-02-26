@@ -1,8 +1,8 @@
 package com.robotgame.domain;
 
 public enum UserRole {
-    USER("User"),
-    SUPERUSER("SuperUser");
+    ROLE_USER("ROLE_USER"),
+    ROLE_SUPERUSER("ROLE_SUPERUSER");
 
     private String displayName;
 

@@ -3,16 +3,17 @@ package com.robotgame.controller;
 import com.robotgame.dto.incoming.AuthenticationResponse;
 import com.robotgame.dto.incoming.LoginRequestDTO;
 import com.robotgame.dto.incoming.RegisterRequestDTO;
+import com.robotgame.dto.outgoing.UserListDTO;
 import com.robotgame.service.CustomUserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api")
 public class CustomUserController {
     private CustomUserService customUserService;
 
@@ -21,17 +22,22 @@ public class CustomUserController {
     }
 
 
-    @PostMapping("/reg")
+    @PostMapping("/users/reg")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequestDTO request){
         return new ResponseEntity<>(customUserService.register(request), HttpStatus.CREATED);
     }
-    @PostMapping("/login")
+    @PostMapping("/users/login")
     public ResponseEntity<AuthenticationResponse> auth(@RequestBody LoginRequestDTO request){
         return new ResponseEntity<>(customUserService.authenticate(request), HttpStatus.OK);
     }
-    @PostMapping("/logout")
+    @PostMapping("/users/logout")
     public ResponseEntity<AuthenticationResponse> lout(){
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+    @GetMapping("/userlist")
+    @PreAuthorize("hasAnyRole('ROLE_SUPERUSER')")
+    public ResponseEntity<List<UserListDTO>> userLister(){
+        return new ResponseEntity<>(customUserService.usersLister(), HttpStatus.OK);
     }
 
 }

@@ -6,13 +6,19 @@ import com.robotgame.domain.UserRole;
 import com.robotgame.dto.incoming.AuthenticationResponse;
 import com.robotgame.dto.incoming.LoginRequestDTO;
 import com.robotgame.dto.incoming.RegisterRequestDTO;
+import com.robotgame.dto.outgoing.UserListDTO;
 import com.robotgame.repository.CustomUserRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CustomUserService {
@@ -35,7 +41,7 @@ public class CustomUserService {
         cUser.setName(request.getName());
         cUser.setEmail(request.getEmail());
         cUser.setPassword(passwordEncoder.encode(request.getPassword()));
-        cUser.setRole(UserRole.USER);
+        cUser.setRole(UserRole.ROLE_USER);
         cUser.setCreatedAt(LocalDateTime.now());
         if (customUserRepository.findByEmail(cUser.getEmail()).orElse(null) == null){
             customUserRepository.save(cUser);
@@ -48,8 +54,6 @@ public class CustomUserService {
 
     public AuthenticationResponse authenticate(LoginRequestDTO request) {
         System.out.println(request);
-        System.out.println(request.getEmail());
-        System.out.println(request.getPassword());
         System.out.println("Mennyi?");
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -61,8 +65,14 @@ public class CustomUserService {
         CustomUser cUser = customUserRepository.findByMail(request.getEmail()).orElse(null);
         System.out.println(cUser);
         String jwt = processor.generateToken(cUser);
-        System.out.println(jwt);
+         return AuthenticationResponse.builder().token(jwt).build();
+    }
 
-        return AuthenticationResponse.builder().token(jwt).build();
+    public List<UserListDTO> usersLister(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails loggedInUser = (UserDetails) authentication.getPrincipal();
+        CustomUser owner = customUserRepository.findByMail(loggedInUser.getUsername()).orElse(null);
+        System.out.println(owner.getRole());
+        return customUserRepository.findAll().stream().map(UserListDTO::new).collect(Collectors.toList());
     }
 }
