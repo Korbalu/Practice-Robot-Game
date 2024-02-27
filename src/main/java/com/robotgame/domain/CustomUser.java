@@ -32,6 +32,8 @@ public class CustomUser implements UserDetails {
     private UserRole role;
     @Column
     private LocalDateTime createdAt;
+    @OneToMany(mappedBy = "owner")
+    private List<Legion> army;
 
 
     @Override
