@@ -4,7 +4,6 @@ import com.robotgame.domain.City;
 import com.robotgame.domain.CustomUser;
 import com.robotgame.domain.Legion;
 import com.robotgame.domain.Unit;
-import com.robotgame.dto.incoming.LegionCreationDTO;
 import com.robotgame.repository.ArmyRepository;
 import com.robotgame.repository.CityRepository;
 import com.robotgame.repository.CustomUserRepository;
@@ -36,9 +35,7 @@ public class ArmyService {
         Legion legion = armyRepository.findByOwnerAndType(owner.getId(), Unit.valueOf(unit));
 
         if (legion == null) {
-            LegionCreationDTO legionCreationDTO = new LegionCreationDTO(Unit.valueOf(unit), quantity, city.getRace());
-            Legion legion1 = new Legion(legionCreationDTO);
-            legion1.setOwner(owner);
+            Legion legion1 = new Legion(Unit.valueOf(unit), quantity, city.getRace(), owner);
             city.setVault(city.getVault() - Unit.valueOf(unit).getCost());
             armyRepository.save(legion1);
         } else {

@@ -1,6 +1,5 @@
 package com.robotgame.domain;
 
-import com.robotgame.dto.incoming.LegionCreationDTO;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,9 +21,10 @@ public class Legion {
     @ManyToOne
     private CustomUser owner;
 
-    public Legion(LegionCreationDTO LCDTO) {
-        this.type = LCDTO.getType();
-        this.quantity = LCDTO.getQuantity();
-        this.race = LCDTO.getRace();
+    public Legion(Unit type, Long quantity, Race race, CustomUser owner) {
+        this.type = type;
+        this.quantity = quantity;
+        this.race = race;
+        this.owner = owner;
     }
 }
