@@ -57,6 +57,7 @@ export class LoginComponent {
       },
       complete: () => {
         console.log("Registration Works!")
+        this.router.navigate(["city-creation"])
       }
     })
   }
