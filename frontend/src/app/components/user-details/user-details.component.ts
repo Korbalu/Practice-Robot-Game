@@ -7,18 +7,19 @@ import {UserService} from "../../services/user.service";
   templateUrl: './user-details.component.html',
   styleUrls: ['./user-details.component.css']
 })
-export class UserDetailsComponent implements OnInit{
+export class UserDetailsComponent implements OnInit {
   users: Array<UserListModel> = [];
+
 
   constructor(private userService: UserService) {
   }
+
   ngOnInit() {
     this.userService.userLister().subscribe({
       next: value => {
         this.users = value;
       },
       error: err => {
-        console.log(this.users)
         console.log(err);
       },
       complete: () => {

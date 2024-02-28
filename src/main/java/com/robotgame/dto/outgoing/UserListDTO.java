@@ -10,10 +10,12 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class UserListDTO {
     private String name;
+    private String mail;
     private LocalDateTime creation;
 
     public UserListDTO(CustomUser user) {
         this.name = user.getName();
+        this.mail = user.getEmail();
         this.creation = user.getCreatedAt();
     }
 }

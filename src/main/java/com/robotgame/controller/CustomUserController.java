@@ -3,6 +3,7 @@ package com.robotgame.controller;
 import com.robotgame.dto.incoming.AuthenticationResponse;
 import com.robotgame.dto.incoming.LoginRequestDTO;
 import com.robotgame.dto.incoming.RegisterRequestDTO;
+import com.robotgame.dto.outgoing.RoleSenderDTO;
 import com.robotgame.dto.outgoing.UserListDTO;
 import com.robotgame.service.CustomUserService;
 import org.springframework.http.HttpStatus;
@@ -23,21 +24,30 @@ public class CustomUserController {
 
 
     @PostMapping("/users/reg")
-    public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequestDTO request){
+    public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequestDTO request) {
         return new ResponseEntity<>(customUserService.register(request), HttpStatus.CREATED);
     }
+
     @PostMapping("/users/login")
-    public ResponseEntity<AuthenticationResponse> auth(@RequestBody LoginRequestDTO request){
+    public ResponseEntity<AuthenticationResponse> auth(@RequestBody LoginRequestDTO request) {
         return new ResponseEntity<>(customUserService.authenticate(request), HttpStatus.OK);
     }
+
     @PostMapping("/users/logout")
-    public ResponseEntity<AuthenticationResponse> lout(){
+    public ResponseEntity<AuthenticationResponse> lout() {
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
     @GetMapping("/userlist")
     @PreAuthorize("hasAnyRole('ROLE_SUPERUSER')")
-    public ResponseEntity<List<UserListDTO>> userLister(){
+    public ResponseEntity<List<UserListDTO>> userLister() {
         return new ResponseEntity<>(customUserService.usersLister(), HttpStatus.OK);
+    }
+
+    @GetMapping("/userrole")
+    @PreAuthorize("hasAnyRole('ROLE_SUPERUSER')")
+    public ResponseEntity<RoleSenderDTO> roleSender(){
+        return new ResponseEntity<>(customUserService.roleSender(), HttpStatus.OK);
     }
 
 }

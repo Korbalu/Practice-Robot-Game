@@ -6,6 +6,7 @@ import com.robotgame.domain.UserRole;
 import com.robotgame.dto.incoming.AuthenticationResponse;
 import com.robotgame.dto.incoming.LoginRequestDTO;
 import com.robotgame.dto.incoming.RegisterRequestDTO;
+import com.robotgame.dto.outgoing.RoleSenderDTO;
 import com.robotgame.dto.outgoing.UserListDTO;
 import com.robotgame.repository.CustomUserRepository;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -74,5 +75,14 @@ public class CustomUserService {
         CustomUser owner = customUserRepository.findByMail(loggedInUser.getUsername()).orElse(null);
         System.out.println(owner.getRole());
         return customUserRepository.findAll().stream().map(UserListDTO::new).collect(Collectors.toList());
+    }
+    public RoleSenderDTO roleSender(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails loggedInUser = (UserDetails) authentication.getPrincipal();
+        CustomUser owner = customUserRepository.findByMail(loggedInUser.getUsername()).orElse(null);
+        System.out.println(owner.getRole().getDisplayName());
+        RoleSenderDTO roleSenderDTO = new RoleSenderDTO();
+        roleSenderDTO.setRole(owner.getRole().getDisplayName());
+        return roleSenderDTO;
     }
 }

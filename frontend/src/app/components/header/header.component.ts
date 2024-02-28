@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {UserService} from "../../services/user.service";
 import {Router} from "@angular/router";
 
@@ -9,8 +9,14 @@ import {Router} from "@angular/router";
 })
 export class HeaderComponent {
 
+  isVisible: boolean = false;
+  role:string = '';
 
   constructor(private userService: UserService, private router: Router) {
+  }
+
+  ngOnInit() {
+
   }
 
   logout() {
@@ -30,6 +36,22 @@ export class HeaderComponent {
 
   login() {
     this.router.navigate(["login"])
+  }
+
+  roler() {
+    this.userService.roleReceiver().subscribe({
+      next: value => {
+        this.role = value.role
+        if (this.role == "ROLE_SUPERUSER") {
+          this.isVisible = true;
+        }
+      },
+      error: err => {
+        console.log(err);
+      },
+      complete: () => {
+      }
+    })
   }
 
   protected readonly localStorage = localStorage;
