@@ -3,6 +3,7 @@ import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {Observable} from "rxjs";
 import {CityCreationModel} from "../models/city-creation-model";
 import {RaceNameModel} from "../models/race-name-model";
+import {CityDetailsModel} from "../models/city-details-model";
 
 const BASE_URL = "http://localhost:8080/api/city";
 @Injectable({
@@ -24,5 +25,11 @@ export class CityService {
     this.token = localStorage.getItem("token");
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
     return this.http.get<Array<RaceNameModel>>(BASE_URL + "/races", {headers});
+  }
+
+  cityDeailer():Observable<CityDetailsModel>{
+    this.token = localStorage.getItem("token");
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
+    return this.http.get<CityDetailsModel>(BASE_URL, {headers});
   }
 }

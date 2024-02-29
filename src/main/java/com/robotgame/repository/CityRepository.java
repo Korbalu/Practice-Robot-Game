@@ -13,4 +13,5 @@ public interface CityRepository extends JpaRepository<City, Long> {
 
     @Query("select t from City t where t.owner.id=:id")
     Optional<City> findByOwner(@Param("id") Long id);
+
 }

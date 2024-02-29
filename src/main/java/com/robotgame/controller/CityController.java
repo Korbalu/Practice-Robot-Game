@@ -1,6 +1,7 @@
 package com.robotgame.controller;
 
 import com.robotgame.dto.incoming.CityCreationDTO;
+import com.robotgame.dto.outgoing.CityDetailsDTO;
 import com.robotgame.dto.outgoing.RaceNameDTO;
 import com.robotgame.service.CityService;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,13 @@ public class CityController {
 
     public CityController(CityService cityService) {
         this.cityService = cityService;
+    }
+
+
+    @GetMapping
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<CityDetailsDTO> cityDetailer(){
+        return new ResponseEntity<>(cityService.cityDetailer(), HttpStatus.OK);
     }
 
 

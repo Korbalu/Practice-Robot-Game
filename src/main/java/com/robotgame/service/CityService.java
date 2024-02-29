@@ -4,6 +4,7 @@ import com.robotgame.domain.City;
 import com.robotgame.domain.CustomUser;
 import com.robotgame.domain.Race;
 import com.robotgame.dto.incoming.CityCreationDTO;
+import com.robotgame.dto.outgoing.CityDetailsDTO;
 import com.robotgame.dto.outgoing.RaceNameDTO;
 import com.robotgame.repository.CityRepository;
 import com.robotgame.repository.CustomUserRepository;
@@ -12,10 +13,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class CityService {
@@ -42,14 +41,25 @@ public class CityService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails loggedInUser = (UserDetails) authentication.getPrincipal();
         CustomUser owner = customUserRepository.findByMail(loggedInUser.getUsername()).orElse(null);
-        if (cityRepository.findByOwner(owner.getId()).isEmpty()){
+        if (cityRepository.findByOwner(owner.getId()).isEmpty()) {
             city.setOwner(owner);
         }
 
         cityRepository.save(city);
     }
 
-    public List<RaceNameDTO> raceLister(){
+    public CityDetailsDTO cityDetailer() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails loggedInUser = (UserDetails) authentication.getPrincipal();
+        CustomUser owner = customUserRepository.findByMail(loggedInUser.getUsername()).orElse(null);
+
+        City city = cityRepository.findByOwner(owner.getId()).orElse(null);
+
+        return new CityDetailsDTO(city.getName(), city.getRace().getDisplayName(), city.getVault(), city.getArea(),
+                                    city.getScore(), owner.getName());
+    }
+
+    public List<RaceNameDTO> raceLister() {
         return Arrays.stream(Race.values()).map(RaceNameDTO::new).toList();
     }
 }

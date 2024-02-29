@@ -42,6 +42,7 @@ export class LoginComponent {
       },
       complete: () => {
         console.log("Login Works");
+        this.router.navigate(["city"])
       }
     })
   }
