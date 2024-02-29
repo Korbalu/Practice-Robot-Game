@@ -5,6 +5,7 @@ import com.robotgame.domain.City;
 import com.robotgame.domain.CustomUser;
 import com.robotgame.domain.Race;
 import com.robotgame.dto.incoming.CityCreationDTO;
+import com.robotgame.dto.outgoing.AllBuildingsListDTO;
 import com.robotgame.dto.outgoing.BuildingListDTO;
 import com.robotgame.dto.outgoing.CityDetailsDTO;
 import com.robotgame.dto.outgoing.RaceNameDTO;
@@ -91,5 +92,9 @@ public class CityService {
             buildings.add(new BuildingListDTO(building.getKey().getDisplayName(), building.getValue()));
         }
         return buildings;
+    }
+
+    public List<AllBuildingsListDTO> everyBuildingsLister(){
+        return Arrays.stream(Building.values()).map(AllBuildingsListDTO::new).toList();
     }
 }

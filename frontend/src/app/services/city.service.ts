@@ -6,6 +6,7 @@ import {RaceNameModel} from "../models/race-name-model";
 import {CityDetailsModel} from "../models/city-details-model";
 import {BuildingCreationModel} from "../models/building-creation-model";
 import {BuildingListModel} from "../models/building-list-model";
+import {AllBuildingsListModel} from "../models/all-buildings-list-model";
 
 const BASE_URL = "http://localhost:8080/api/city";
 
@@ -43,9 +44,16 @@ export class CityService {
     return this.http.post(BASE_URL + "/build", building, {headers})
   }
 
-  buildingLister():Observable<Array<BuildingListModel>>{
+  buildingLister():Observable<any>{
     this.token = localStorage.getItem("token");
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
     return this.http.get<Array<BuildingListModel>>(BASE_URL + "/buildings", {headers})
   }
+
+  everyBuildingLister():Observable<any>{
+    this.token = localStorage.getItem("token");
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
+    return this.http.get<Array<AllBuildingsListModel>>(BASE_URL + "/allBuildings", {headers})
+  }
+
 }

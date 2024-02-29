@@ -5,6 +5,7 @@ import com.robotgame.domain.CustomUser;
 import com.robotgame.domain.Legion;
 import com.robotgame.domain.Unit;
 import com.robotgame.dto.outgoing.LegionListDTO;
+import com.robotgame.dto.outgoing.UnitListDTO;
 import com.robotgame.repository.ArmyRepository;
 import com.robotgame.repository.CityRepository;
 import com.robotgame.repository.CustomUserRepository;
@@ -13,6 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -55,5 +57,9 @@ public class ArmyService {
         CustomUser owner = customUserRepository.findByMail(loggedInUser.getUsername()).orElse(null);
 
         return armyRepository.findAllByOwner(owner.getId()).stream().map(LegionListDTO::new).toList();
+    }
+
+    public List<UnitListDTO> unitLister(){
+        return Arrays.stream(Unit.values()).map(UnitListDTO::new).toList();
     }
 }

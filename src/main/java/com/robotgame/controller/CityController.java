@@ -2,6 +2,7 @@ package com.robotgame.controller;
 
 import com.robotgame.dto.incoming.BuildingCreationDTO;
 import com.robotgame.dto.incoming.CityCreationDTO;
+import com.robotgame.dto.outgoing.AllBuildingsListDTO;
 import com.robotgame.dto.outgoing.BuildingListDTO;
 import com.robotgame.dto.outgoing.CityDetailsDTO;
 import com.robotgame.dto.outgoing.RaceNameDTO;
@@ -55,5 +56,11 @@ public class CityController {
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<List<BuildingListDTO>> buildingLister(){
         return new ResponseEntity<>(cityService.buildingLister(), HttpStatus.OK);
+    }
+
+    @GetMapping("/allBuildings")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<List<AllBuildingsListDTO>> allBuildings() {
+        return new ResponseEntity<>(cityService.everyBuildingsLister(), HttpStatus.OK);
     }
 }

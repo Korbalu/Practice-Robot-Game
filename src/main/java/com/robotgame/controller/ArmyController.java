@@ -2,6 +2,7 @@ package com.robotgame.controller;
 
 import com.robotgame.dto.incoming.LegionCreationDTO;
 import com.robotgame.dto.outgoing.LegionListDTO;
+import com.robotgame.dto.outgoing.UnitListDTO;
 import com.robotgame.service.ArmyService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,5 +31,11 @@ public class ArmyController {
     @PreAuthorize("hasAnyRole('ROLE_USER')")
     public ResponseEntity<List<LegionListDTO>> armyLister(){
         return new ResponseEntity<>(armyService.armyLister(), HttpStatus.OK);
+    }
+
+    @GetMapping("/units")
+    @PreAuthorize("hasAnyRole('ROLE_USER')")
+    public ResponseEntity<List<UnitListDTO>> unitLister(){
+        return new ResponseEntity<>(armyService.unitLister(), HttpStatus.OK);
     }
 }

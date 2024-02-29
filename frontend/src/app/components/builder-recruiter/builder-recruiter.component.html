@@ -1,1 +1,41 @@
-<p>builder-recruiter works!</p>
+<div class="details">
+  <table class="table mb-6">
+    <tbody>
+    <tr class="table-light">
+      <td>Robot Type</td>
+      <td>Attack</td>
+      <td>Armor</td>
+      <td>Structure</td>
+      <td>Attack Type</td>
+      <td>Armor Type</td>
+      <td>Cost</td>
+    </tr>
+    <tr class="table-bordered" *ngFor="let unit of units">
+      <td>{{unit.displayName}}</td>
+      <td>{{unit.attack}}</td>
+      <td>{{unit.armor}}</td>
+      <td>{{unit.structure}}</td>
+      <td>{{unit.attackType}}</td>
+      <td>{{unit.armorType}}</td>
+      <td>{{unit.cost}}</td>
+    </tr>
+    </tbody>
+  </table>
+</div>
+<br>
+<div class="details">
+  <table class="table mb-6">
+    <tbody>
+    <tr class="table-light">
+      <td>Building</td>
+      <td>Production</td>
+      <td>Cost</td>
+    </tr>
+    <tr class="table-bordered" *ngFor="let building of buildings">
+      <td>{{building.displayName}}</td>
+      <td>{{building.production}}</td>
+      <td>{{building.cost}}</td>
+    </tr>
+    </tbody>
+  </table>
+</div>
