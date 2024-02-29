@@ -15,7 +15,7 @@ export class CityComponent {
   }
 
   ngOnInit(){
-    this.cityService.cityDeailer().subscribe({
+    this.cityService.cityDetailer().subscribe({
       next:(data)=>{
         this.city = data;
       },
