@@ -1,4 +1,4 @@
-<h3>{{city.name}}</h3>
+<h3 id="city-name">{{city.name}}</h3>
 
 <div>
   <table class="table mb-6">
@@ -19,4 +19,36 @@
     </tr>
     </tbody>
   </table>
+</div>
+<div class="divider">
+  <div class="details">
+    <table class="table mb-6">
+      <tbody>
+      <tr class="table-light">
+        <td>Type</td>
+        <td>Quantity</td>
+        <td>Race</td>
+      </tr>
+      <tr class="table-bordered" *ngFor="let legion of army">
+        <td>{{legion.type}}</td>
+        <td>{{legion.quantity}}</td>
+        <td>{{legion.race}}</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="details">
+    <table class="table mb-6">
+      <tbody>
+      <tr class="table-light">
+        <td>Building</td>
+        <td>Quantity</td>
+      </tr>
+      <tr class="table-bordered" *ngFor="let building of buildings">
+        <td>{{building.name}}</td>
+        <td>{{building.quantity}}</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
 </div>

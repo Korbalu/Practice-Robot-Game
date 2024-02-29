@@ -10,6 +10,7 @@ import {HttpClientModule} from "@angular/common/http";
 import { UserDetailsComponent } from './components/user-details/user-details.component';
 import { CityCreationComponent } from './components/city-creation/city-creation.component';
 import { CityComponent } from './components/city/city.component';
+import { BuilderRecruiterComponent } from './components/builder-recruiter/builder-recruiter.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { CityComponent } from './components/city/city.component';
     LoginComponent,
     UserDetailsComponent,
     CityCreationComponent,
-    CityComponent
+    CityComponent,
+    BuilderRecruiterComponent
   ],
   imports: [
     BrowserModule,

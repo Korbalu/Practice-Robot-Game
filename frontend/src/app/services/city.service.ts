@@ -43,7 +43,7 @@ export class CityService {
     return this.http.post(BASE_URL + "/build", building, {headers})
   }
 
-  buildingLister():Observable<any>{
+  buildingLister():Observable<Array<BuildingListModel>>{
     this.token = localStorage.getItem("token");
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
     return this.http.get<Array<BuildingListModel>>(BASE_URL + "/buildings", {headers})

@@ -1,26 +1,30 @@
 <nav class="navbar navbar-expand-lg static-top">
   <div class="container-fluid">
-    <a class="navbar-brand" href="#" (click)="roler()">Home</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <div class="testDiv">
-      <div class="active-paths">
+    <div class="d-flex justify-content-between align-items-center">
+      <a class="navbar-brand" href="#" (click)="roler()">Home</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+              aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+    </div>
+    <div class="collapse navbar-collapse justify-content" id="navbarNav">
       <ul class="navbar-nav">
         <li *ngIf="isVisible && localStorage.getItem('token')" class="nav-item">
           <a class="nav-link" routerLink="/user-details">User Page</a>
         </li>
+        <li *ngIf="localStorage.getItem('token')" class="nav-item">
+          <a class="nav-link" routerLink="/city">City</a>
+        </li>
+        <li *ngIf="localStorage.getItem('token')" class="nav-item">
+          <a class="nav-link" routerLink="/builder-recruiter">Build/Recruit</a>
+        </li>
       </ul>
-      </div>
-      <div class="logouter">
-        <button class="user-buttons" *ngIf="localStorage.getItem('token')" (click)="logout()">Logout</button>
-        <button class="user-buttons" *ngIf="localStorage.getItem('token') ==='' || localStorage.getItem('token') === null" (click)="login()">
-          Login or Register
-        </button>
-      </div>
     </div>
+    <div class="logouter">
+      <button class="user-buttons" *ngIf="localStorage.getItem('token')" (click)="logout()">Logout</button>
+      <button class="user-buttons" *ngIf="localStorage.getItem('token') ==='' || localStorage.getItem('token') === null" (click)="login()">
+        Login or Register
+      </button>
     </div>
   </div>
 </nav>
