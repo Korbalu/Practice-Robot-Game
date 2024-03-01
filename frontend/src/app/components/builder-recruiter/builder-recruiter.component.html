@@ -2,22 +2,32 @@
   <table class="table mb-6">
     <tbody>
     <tr class="table-light">
-      <td>Robot Type</td>
-      <td>Attack</td>
-      <td>Armor</td>
-      <td>Structure</td>
-      <td>Attack Type</td>
-      <td>Armor Type</td>
-      <td>Cost</td>
+      <td class="table-data">Robot Type</td>
+      <td class="table-data">Attack</td>
+      <td class="table-data">Armor</td>
+      <td class="table-data">Structure</td>
+      <td class="table-data">Attack Type</td>
+      <td class="table-data">Armor Type</td>
+      <td class="table-data">Cost</td>
+      <td colspan="3" class="table-data">Add</td>
     </tr>
     <tr class="table-bordered" *ngFor="let unit of units">
-      <td>{{unit.displayName}}</td>
-      <td>{{unit.attack}}</td>
-      <td>{{unit.armor}}</td>
-      <td>{{unit.structure}}</td>
-      <td>{{unit.attackType}}</td>
-      <td>{{unit.armorType}}</td>
-      <td>{{unit.cost}}</td>
+      <td class="table-data">{{unit.displayName}}</td>
+      <td class="table-data">{{unit.attack}}</td>
+      <td class="table-data">{{unit.armor}}</td>
+      <td class="table-data">{{unit.structure}}</td>
+      <td class="table-data">{{unit.attackType}}</td>
+      <td class="table-data">{{unit.armorType}}</td>
+      <td class="table-data">{{unit.cost}}</td>
+      <td style="text-align: center">
+        <button type="button" class="btn btn-info" (click)="recruiter(1, unit.displayName)">Add 1</button>
+      </td>
+      <td style="text-align: center">
+        <button type="button" class="btn btn-info" (click)="recruiter(5, unit.displayName)">Add 5</button>
+      </td >
+      <td style="text-align: center">
+        <button type="button" class="btn btn-info" (click)="recruiter(10, unit.displayName)">Add 10</button>
+      </td>
     </tr>
     </tbody>
   </table>
@@ -27,14 +37,18 @@
   <table class="table mb-6">
     <tbody>
     <tr class="table-light">
-      <td>Building</td>
-      <td>Production</td>
-      <td>Cost</td>
+      <td class="table-data">Building</td>
+      <td class="table-data">Production</td>
+      <td class="table-data">Cost</td>
+      <td class="table-data">Add</td>
     </tr>
     <tr class="table-bordered" *ngFor="let building of buildings">
-      <td>{{building.displayName}}</td>
-      <td>{{building.production}}</td>
-      <td>{{building.cost}}</td>
+      <td class="table-data">{{building.displayName}}</td>
+      <td class="table-data">{{building.production}}</td>
+      <td class="table-data">{{building.cost}}</td>
+      <td style="text-align: center">
+        <button type="button" class="btn btn-info" (click)="buildingBuilder(building.displayName)">Add 1</button>
+      </td>
     </tr>
     </tbody>
   </table>

@@ -41,7 +41,7 @@ export class CityService {
   buildingBuilder(building: BuildingCreationModel): Observable<any> {
     this.token = localStorage.getItem("token");
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
-    return this.http.post(BASE_URL + "/build", building, {headers})
+    return this.http.put(BASE_URL + "/build", building, {headers})
   }
 
   buildingLister():Observable<any>{

@@ -7,4 +7,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class BuildingCreationDTO {
     private String building;
+
 }

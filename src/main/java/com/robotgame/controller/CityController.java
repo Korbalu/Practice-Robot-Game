@@ -45,11 +45,11 @@ public class CityController {
         return new ResponseEntity<>(cityService.raceLister(), HttpStatus.OK);
     }
 
-    @PostMapping("/build")
+    @PutMapping("/build")
     @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<Void> buildingBuilder(@RequestBody BuildingCreationDTO building){
         cityService.builder(building.getBuilding());
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @GetMapping("/buildings")

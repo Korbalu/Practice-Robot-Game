@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {CityDetailsModel} from "../../models/city-details-model";
 import {CityService} from "../../services/city.service";
 import {ArmyService} from "../../services/army.service";
@@ -11,7 +11,7 @@ import {LegionListModel} from "../../models/legion-list-model";
   styleUrls: ['./city.component.css']
 })
 export class CityComponent {
-  city!: CityDetailsModel
+  city: CityDetailsModel = {name: "", race: "", vault: 0, area: 0, score: 0, ownerName: ""}
   buildings: Array<BuildingListModel> = [];
   army: Array<LegionListModel> = [];
 
@@ -19,33 +19,36 @@ export class CityComponent {
 
   }
 
-  ngOnInit(){
+  ngOnInit() {
     this.cityService.cityDetailer().subscribe({
-      next:(data)=>{
+      next: (data) => {
         this.city = data;
       },
       error: err => {
         console.log(err)
       },
-      complete:()=>{}
+      complete: () => {
+      }
     })
     this.cityService.buildingLister().subscribe({
-      next:(data)=>{
+      next: (data) => {
         this.buildings = data;
       },
       error: err => {
         console.log(err)
       },
-      complete:()=>{}
+      complete: () => {
+      }
     })
     this.armyService.legionList().subscribe({
-      next:(data)=>{
+      next: (data) => {
         this.army = data;
       },
       error: err => {
         console.log(err)
       },
-      complete:()=>{}
+      complete: () => {
+      }
     })
   }
 }

@@ -61,26 +61,28 @@ public class CityService {
         City city = cityRepository.findByOwner(owner.getId()).orElse(null);
 
         return new CityDetailsDTO(city.getName(), city.getRace().getDisplayName(), city.getVault(), city.getArea(),
-                                    city.getScore(), owner.getName());
+                city.getScore(), owner.getName());
     }
 
     public List<RaceNameDTO> raceLister() {
         return Arrays.stream(Race.values()).map(RaceNameDTO::new).toList();
     }
 
-    public void builder(String building){
+    public void builder(String building) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails loggedInUser = (UserDetails) authentication.getPrincipal();
         CustomUser owner = customUserRepository.findByMail(loggedInUser.getUsername()).orElse(null);
 
         City city = cityRepository.findByOwner(owner.getId()).orElse(null);
 
-        city.getBuildings().computeIfPresent(Building.valueOf(building), (k, v) -> v + 1);
-        city.getBuildings().putIfAbsent(Building.valueOf(building), 1L);
-        city.setVault(city.getVault() - Building.valueOf(building).getCost());
+        city.getBuildings().computeIfPresent(Building.valueOf(building.toUpperCase()), (k, v) -> v + 1L);
+        city.getBuildings().putIfAbsent(Building.valueOf(building.toUpperCase()), 1L);
+        city.setVault(city.getVault() - Building.valueOf(building.toUpperCase()).getCost());
+        city.setArea(city.getArea()-1);
+        System.out.println(city.getBuildings());
     }
 
-    public List<BuildingListDTO> buildingLister(){
+    public List<BuildingListDTO> buildingLister() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails loggedInUser = (UserDetails) authentication.getPrincipal();
         CustomUser owner = customUserRepository.findByMail(loggedInUser.getUsername()).orElse(null);
@@ -94,7 +96,7 @@ public class CityService {
         return buildings;
     }
 
-    public List<AllBuildingsListDTO> everyBuildingsLister(){
+    public List<AllBuildingsListDTO> everyBuildingsLister() {
         return Arrays.stream(Building.values()).map(AllBuildingsListDTO::new).toList();
     }
 }

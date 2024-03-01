@@ -43,15 +43,15 @@ public class ArmyService {
 
         if (legion == null) {
             Legion legion1 = new Legion(Unit.valueOf(unit), quantity, city.getRace(), owner);
-            city.setVault(city.getVault() - Unit.valueOf(unit).getCost());
+            city.setVault(city.getVault() - Unit.valueOf(unit).getCost() * quantity);
             armyRepository.save(legion1);
         } else {
-            city.setVault(city.getVault() - Unit.valueOf(unit).getCost());
+            city.setVault(city.getVault() - Unit.valueOf(unit).getCost() * quantity);
             legion.setQuantity(legion.getQuantity() + quantity);
         }
     }
 
-    public List<LegionListDTO> armyLister(){
+    public List<LegionListDTO> armyLister() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails loggedInUser = (UserDetails) authentication.getPrincipal();
         CustomUser owner = customUserRepository.findByMail(loggedInUser.getUsername()).orElse(null);
@@ -59,7 +59,7 @@ public class ArmyService {
         return armyRepository.findAllByOwner(owner.getId()).stream().map(LegionListDTO::new).toList();
     }
 
-    public List<UnitListDTO> unitLister(){
+    public List<UnitListDTO> unitLister() {
         return Arrays.stream(Unit.values()).map(UnitListDTO::new).toList();
     }
 }

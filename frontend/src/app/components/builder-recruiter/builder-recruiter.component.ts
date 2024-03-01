@@ -3,6 +3,8 @@ import {CityService} from "../../services/city.service";
 import {ArmyService} from "../../services/army.service";
 import {UnitListModel} from "../../models/unit-list-model";
 import {AllBuildingsListModel} from "../../models/all-buildings-list-model";
+import {LegionCreationModel} from "../../models/legion-creation-model";
+import {BuildingCreationModel} from "../../models/building-creation-model";
 
 @Component({
   selector: 'app-builder-recruiter',
@@ -36,6 +38,33 @@ export class BuilderRecruiterComponent {
         console.log(err)
       },
       complete: () => {
+      }
+    })
+  }
+
+  recruiter(quantityP: number, unitP:string){
+    let legion: LegionCreationModel = {unit : unitP, quantity: quantityP}
+    this.armyService.createLegion(legion).subscribe({
+      next: () => {
+      },
+      error: err => {
+        console.log(err)
+      },
+      complete: () => {
+      }
+    })
+  }
+
+  buildingBuilder(buildingP:string){
+    let building:BuildingCreationModel = {building: buildingP}
+    this.cityService.buildingBuilder(building).subscribe({
+      next: () => {
+      },
+      error: err => {
+        console.log(err)
+      },
+      complete: () => {
+        console.log("Building Built")
       }
     })
   }
