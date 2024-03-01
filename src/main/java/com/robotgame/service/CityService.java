@@ -48,7 +48,6 @@ public class CityService {
         if (cityRepository.findByOwner(owner.getId()).isEmpty()) {
             city.setOwner(owner);
         }
-
         cityRepository.save(city);
     }
 
