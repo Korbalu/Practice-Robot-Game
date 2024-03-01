@@ -1,6 +1,6 @@
 <div class="row">
-  <div>
-    <div>Login</div>
+  <div class="col">
+    <h2 class="text-center">Login</h2>
     <div (keydown.enter)="login()">
       <form [formGroup]="loginForm">
         <label class="form-label" for="email2">Email address</label>
@@ -16,13 +16,11 @@
                name="password2"
                placeholder="Give Password"/>
       </form>
+      <button class="btn btn-primary" (click)="login()">Login</button>
     </div>
-    <button (click)="login()">Login</button>
   </div>
-  <div>
-    Register
-  </div>
-  <div>
+  <div class="col">
+    <h2 class="text-center">Register</h2>
     <form [formGroup]="registerForm">
       <label class="form-label" for="name">User Name</label>
       <input type="email" class="form-control"
@@ -36,15 +34,13 @@
              id="email"
              name="email"
              placeholder="Enter Email"/>
-      <label class="form-label" for="password">Email address</label>
+      <label class="form-label" for="password">Password</label>
       <input type="password" class="form-control"
              formControlName="password"
              id="password"
              name="password"
              placeholder="Give Password"/>
     </form>
-  </div>
-  <div>
-    <button (click)="reg()">Register</button>
+    <button class="btn btn-primary" (click)="reg()">Register</button>
   </div>
 </div>
