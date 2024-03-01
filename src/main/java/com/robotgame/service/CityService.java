@@ -120,6 +120,7 @@ public class CityService {
         }
         cityRepository.save(city);
         owner.setTurns(owner.getTurns() - 1);
+        customUserRepository.save(owner);
     }
 
     public void buildingScorer(String thingToScore, City city) {
