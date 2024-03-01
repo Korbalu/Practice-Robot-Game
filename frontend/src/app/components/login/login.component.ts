@@ -13,7 +13,6 @@ export class LoginComponent {
 
   registerForm!: FormGroup;
   loginForm!: FormGroup;
-  datas:LoginRequestModel= {email: '', password: ''};
 
   constructor(private formBuilder: FormBuilder, private router: Router, private userService: UserService) {
     this.registerForm = this.formBuilder.group({
@@ -27,12 +26,11 @@ export class LoginComponent {
     })
   }
 
-  login(name: string, pass: string) {
-    // console.log(this.loginForm.value)
-    // let data:LoginRequestModel = this.loginForm.value
-    this.datas.password = pass;
-    this.datas.email = name;
-    this.userService.login(this.datas).subscribe({
+  login() {
+    const data: LoginRequestModel = this.loginForm.value
+    data.email = this.loginForm.value.email2;
+    data.password = this.loginForm.value.password2;
+    this.userService.login(data).subscribe({
       next: (response) => {
         localStorage.setItem('token', response.token);
       },
@@ -46,6 +44,8 @@ export class LoginComponent {
   }
 
   reg() {
+    console.log(this.registerForm.value)
+    console.log(typeof this.registerForm.value)
     this.userService.register(this.registerForm.value).subscribe({
       next: (response) => {
         localStorage.setItem('token', response.token);
