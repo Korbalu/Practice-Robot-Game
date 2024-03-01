@@ -44,7 +44,7 @@ public class CustomUserService {
         cUser.setPassword(passwordEncoder.encode(request.getPassword()));
         cUser.setRole(UserRole.ROLE_USER);
         cUser.setCreatedAt(LocalDateTime.now());
-        if (customUserRepository.findByEmail(cUser.getEmail()).orElse(null) == null){
+        if (customUserRepository.findByEmail(cUser.getEmail()).orElse(null) == null) {
             customUserRepository.save(cUser);
             String jwt = processor.generateToken(cUser);
             return AuthenticationResponse.builder().token(jwt).build();
@@ -54,33 +54,28 @@ public class CustomUserService {
     }
 
     public AuthenticationResponse authenticate(LoginRequestDTO request) {
-        System.out.println(request);
-        System.out.println("Mennyi?");
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
                         request.getPassword()
                 )
         );
-        System.out.println("30");
         CustomUser cUser = customUserRepository.findByMail(request.getEmail()).orElse(null);
-        System.out.println(cUser);
         String jwt = processor.generateToken(cUser);
-         return AuthenticationResponse.builder().token(jwt).build();
+        return AuthenticationResponse.builder().token(jwt).build();
     }
 
-    public List<UserListDTO> usersLister(){
+    public List<UserListDTO> usersLister() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails loggedInUser = (UserDetails) authentication.getPrincipal();
         CustomUser owner = customUserRepository.findByMail(loggedInUser.getUsername()).orElse(null);
-        System.out.println(owner.getRole());
         return customUserRepository.findAll().stream().map(UserListDTO::new).collect(Collectors.toList());
     }
-    public RoleSenderDTO roleSender(){
+
+    public RoleSenderDTO roleSender() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails loggedInUser = (UserDetails) authentication.getPrincipal();
         CustomUser owner = customUserRepository.findByMail(loggedInUser.getUsername()).orElse(null);
-        System.out.println(owner.getRole().getDisplayName());
         RoleSenderDTO roleSenderDTO = new RoleSenderDTO();
         roleSenderDTO.setRole(owner.getRole().getDisplayName());
         return roleSenderDTO;

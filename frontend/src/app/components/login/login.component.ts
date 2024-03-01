@@ -34,14 +34,12 @@ export class LoginComponent {
     this.datas.email = name;
     this.userService.login(this.datas).subscribe({
       next: (response) => {
-        console.log(response);
         localStorage.setItem('token', response.token);
       },
       error: err => {
         console.log(err);
       },
       complete: () => {
-        console.log("Login Works");
         this.router.navigate(["city"])
       }
     })
@@ -50,14 +48,12 @@ export class LoginComponent {
   reg() {
     this.userService.register(this.registerForm.value).subscribe({
       next: (response) => {
-        console.log(response);
         localStorage.setItem('token', response.token);
       },
       error: err => {
         console.log(err)
       },
       complete: () => {
-        console.log("Registration Works!")
         this.router.navigate(["city-creation"])
       }
     })

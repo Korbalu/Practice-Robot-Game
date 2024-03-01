@@ -14,10 +14,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ArmyService {
@@ -41,13 +39,15 @@ public class ArmyService {
 
         Legion legion = armyRepository.findByOwnerAndType(owner.getId(), Unit.valueOf(unit));
 
-        if (legion == null) {
-            Legion legion1 = new Legion(Unit.valueOf(unit), quantity, city.getRace(), owner);
-            city.setVault(city.getVault() - Unit.valueOf(unit).getCost() * quantity);
-            armyRepository.save(legion1);
-        } else {
-            city.setVault(city.getVault() - Unit.valueOf(unit).getCost() * quantity);
-            legion.setQuantity(legion.getQuantity() + quantity);
+        if (city.getVault() >= Unit.valueOf(unit).getCost() * quantity) {
+            if (legion == null) {
+                Legion legion1 = new Legion(Unit.valueOf(unit), quantity, city.getRace(), owner);
+                city.setVault(city.getVault() - Unit.valueOf(unit).getCost() * quantity);
+                armyRepository.save(legion1);
+            } else {
+                city.setVault(city.getVault() - Unit.valueOf(unit).getCost() * quantity);
+                legion.setQuantity(legion.getQuantity() + quantity);
+            }
         }
     }
 
