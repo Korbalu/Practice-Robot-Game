@@ -74,12 +74,15 @@ public class CityService {
         CustomUser owner = customUserRepository.findByMail(loggedInUser.getUsername()).orElse(null);
 
         City city = cityRepository.findByOwner(owner.getId()).orElse(null);
-
-        city.getBuildings().computeIfPresent(Building.valueOf(building.toUpperCase()), (k, v) -> v + 1L);
+        System.out.println(city.getBuildings());
+        city.getBuildings().computeIfPresent(Building.valueOf(building.toUpperCase()), (k, v) -> v + 1);
         city.getBuildings().putIfAbsent(Building.valueOf(building.toUpperCase()), 1L);
         city.setVault(city.getVault() - Building.valueOf(building.toUpperCase()).getCost());
         city.setArea(city.getArea()-1);
         System.out.println(city.getBuildings());
+        System.out.println(city.getVault());
+        System.out.println(city.getArea());
+        cityRepository.save(city);
     }
 
     public List<BuildingListDTO> buildingLister() {

@@ -9,10 +9,10 @@ public enum Building {
     FACTORY("Factory", 2, 100);
 
     private String displayName;
-    private Integer production;
-    private Integer cost;
+    private int production;
+    private int cost;
 
-    Building(String displayName, Integer production, Integer cost) {
+    Building(String displayName, int production, int cost) {
         this.displayName = displayName;
         this.production = production;
         this.cost = cost;
