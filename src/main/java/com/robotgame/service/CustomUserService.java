@@ -42,6 +42,7 @@ public class CustomUserService {
         cUser.setName(request.getName());
         cUser.setEmail(request.getEmail());
         cUser.setPassword(passwordEncoder.encode(request.getPassword()));
+        cUser.setTurns(50);
         cUser.setRole(UserRole.ROLE_USER);
         cUser.setCreatedAt(LocalDateTime.now());
         if (customUserRepository.findByEmail(cUser.getEmail()).orElse(null) == null) {

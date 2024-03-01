@@ -27,6 +27,7 @@ public class CustomUser implements UserDetails {
     private String email;
     @Column
     private String password;
+    private Integer turns;
     @Enumerated(EnumType.STRING)
     @Column
     private UserRole role;

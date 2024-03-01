@@ -63,4 +63,11 @@ public class CityController {
     public ResponseEntity<List<AllBuildingsListDTO>> allBuildings() {
         return new ResponseEntity<>(cityService.everyBuildingsLister(), HttpStatus.OK);
     }
+
+    @GetMapping("/newTurn")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<Void> takeTurns(){
+        cityService.newTurn();
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

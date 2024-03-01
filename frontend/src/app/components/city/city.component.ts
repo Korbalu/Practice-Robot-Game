@@ -51,4 +51,18 @@ export class CityComponent {
       }
     })
   }
+
+  newTurn() {
+    this.cityService.takeNewTurn().subscribe({
+      next:()  => {
+      },
+      error: err => {
+        console.log(err)
+      },
+      complete: () => {
+        console.log("New Turn Taken");
+        this.ngOnInit();
+      }
+    })
+  }
 }

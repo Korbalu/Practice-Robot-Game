@@ -41,14 +41,16 @@ public class ArmyService {
 
         if (city.getVault() >= Unit.valueOf(unit).getCost() * quantity) {
             if (legion == null) {
-                Legion legion1 = new Legion(Unit.valueOf(unit), quantity, city.getRace(), owner);
+                Legion legion2 = new Legion(Unit.valueOf(unit), quantity, city.getRace(), owner);
                 city.setVault(city.getVault() - Unit.valueOf(unit).getCost() * quantity);
-                armyRepository.save(legion1);
+                armyRepository.save(legion2);
             } else {
                 city.setVault(city.getVault() - Unit.valueOf(unit).getCost() * quantity);
                 legion.setQuantity(legion.getQuantity() + quantity);
+                armyRepository.save(legion);
             }
         }
+        unitScorer(unit, city, quantity);
     }
 
     public List<LegionListDTO> armyLister() {
@@ -61,5 +63,10 @@ public class ArmyService {
 
     public List<UnitListDTO> unitLister() {
         return Arrays.stream(Unit.values()).map(UnitListDTO::new).toList();
+    }
+
+    public void unitScorer(String thingToScore, City city, Long quantity) {
+        city.setScore(city.getScore() + Unit.valueOf(thingToScore).getScore() * quantity);
+        cityRepository.save(city);
     }
 }

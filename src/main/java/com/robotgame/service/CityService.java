@@ -1,9 +1,6 @@
 package com.robotgame.service;
 
-import com.robotgame.domain.Building;
-import com.robotgame.domain.City;
-import com.robotgame.domain.CustomUser;
-import com.robotgame.domain.Race;
+import com.robotgame.domain.*;
 import com.robotgame.dto.incoming.CityCreationDTO;
 import com.robotgame.dto.outgoing.AllBuildingsListDTO;
 import com.robotgame.dto.outgoing.BuildingListDTO;
@@ -26,10 +23,12 @@ public class CityService {
 
     private CityRepository cityRepository;
     private CustomUserRepository customUserRepository;
+    private ArmyService armyService;
 
-    public CityService(CityRepository cityRepository, CustomUserRepository customUserRepository) {
+    public CityService(CityRepository cityRepository, CustomUserRepository customUserRepository, ArmyService armyService) {
         this.cityRepository = cityRepository;
         this.customUserRepository = customUserRepository;
+        this.armyService = armyService;
     }
 
     public void cityCreator(CityCreationDTO CCDTO) {
@@ -80,8 +79,8 @@ public class CityService {
             city.getBuildings().putIfAbsent(Building.valueOf(building.toUpperCase()), 1L);
             city.setVault(city.getVault() - Building.valueOf(building.toUpperCase()).getCost());
             city.setArea(city.getArea() - 1);
+            buildingScorer(building, city);
         }
-
         cityRepository.save(city);
     }
 
@@ -101,5 +100,29 @@ public class CityService {
 
     public List<AllBuildingsListDTO> everyBuildingsLister() {
         return Arrays.stream(Building.values()).map(AllBuildingsListDTO::new).toList();
+    }
+
+    public void newTurn() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails loggedInUser = (UserDetails) authentication.getPrincipal();
+        CustomUser owner = customUserRepository.findByMail(loggedInUser.getUsername()).orElse(null);
+
+        City city = cityRepository.findByOwner(owner.getId()).orElse(null);
+
+        for (Map.Entry<Building, Long> building : city.getBuildings().entrySet()) {
+            if (building.getKey().equals(Building.CRYSTALMINE)) {
+                city.setVault(city.getVault() + building.getKey().getProduction() * building.getValue());
+            }
+            if (building.getKey().equals(Building.FACTORY)) {
+                armyService.increaseUnit(Unit.LightBot.getDisplayName(), (long) building.getKey().getProduction() * building.getValue());
+                city.setVault(city.getVault() + Unit.LightBot.getCost() * building.getKey().getProduction() * building.getValue());
+            }
+        }
+        cityRepository.save(city);
+        owner.setTurns(owner.getTurns() - 1);
+    }
+
+    public void buildingScorer(String thingToScore, City city) {
+        city.setScore(city.getScore() + Building.valueOf(thingToScore.toUpperCase()).getScore());
     }
 }

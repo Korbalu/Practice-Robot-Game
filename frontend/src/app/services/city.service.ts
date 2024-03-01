@@ -56,4 +56,9 @@ export class CityService {
     return this.http.get<Array<AllBuildingsListModel>>(BASE_URL + "/allBuildings", {headers})
   }
 
+  takeNewTurn():Observable<any>{
+    this.token = localStorage.getItem("token");
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
+    return this.http.get(BASE_URL + "/newTurn", {headers});
+  }
 }
