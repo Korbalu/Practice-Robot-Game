@@ -120,7 +120,7 @@ public class CityService {
         customUserRepository.save(owner);
     }
 
-    @Scheduled(cron = "0 0 0 * * ?")
+    @Scheduled(cron = "0 0 0 * * ?") // it only works, if the app runs at midnight!!!
     public void vaultDecreaser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails loggedInUser = (UserDetails) authentication.getPrincipal();
