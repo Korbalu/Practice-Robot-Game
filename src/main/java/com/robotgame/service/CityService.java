@@ -8,15 +8,13 @@ import com.robotgame.dto.outgoing.CityDetailsDTO;
 import com.robotgame.dto.outgoing.RaceNameDTO;
 import com.robotgame.repository.CityRepository;
 import com.robotgame.repository.CustomUserRepository;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class CityService {
@@ -120,6 +118,21 @@ public class CityService {
         cityRepository.save(city);
         owner.setTurns(owner.getTurns() - 1);
         customUserRepository.save(owner);
+    }
+
+    @Scheduled(cron = "0 0 0 * * ?")
+    public void vaultDecreaser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails loggedInUser = (UserDetails) authentication.getPrincipal();
+        CustomUser owner = customUserRepository.findByMail(loggedInUser.getUsername()).orElse(null);
+
+        City city = cityRepository.findByOwner(owner.getId()).orElse(null);
+
+        Random random = new Random();
+        int randomTaxKey = 1 + random.nextInt(5);
+        long tax = city.getVault() * randomTaxKey / 100;
+        city.setVault(city.getVault() - tax);
+        cityRepository.save(city);
     }
 
     public void buildingScorer(String thingToScore, City city) {

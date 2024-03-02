@@ -1,18 +1,25 @@
 package com.robotgame.component;
 
+import com.robotgame.domain.CustomUser;
+import com.robotgame.repository.CustomUserRepository;
 import com.robotgame.service.CustomUserService;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+
 @Component
 public class ThreadToTurnScheduler {
 
-    private CustomUserService customUserService;
+    private CustomUserRepository customUserRepository;
     private Thread thread;
 
-    public ThreadToTurnScheduler(CustomUserService customUserService) {
-        this.customUserService = customUserService;
+    public ThreadToTurnScheduler(CustomUserRepository customUserRepository) {
+        this.customUserRepository = customUserRepository;
     }
 
     @PostConstruct
@@ -31,7 +38,25 @@ public class ThreadToTurnScheduler {
         @Override
         public void run() {
             while (!Thread.currentThread().isInterrupted()) {
-                customUserService.giveTurnsToUsers();
+                int minutesForTurnsToGive = 10;
+                List<CustomUser> users = customUserRepository.findAll();
+
+                for (CustomUser user : users) {
+                    LocalDateTime lastTurnGiven = user.getLastTimeTurnGiven();
+                    long minutesSinceLastTurn = Duration.between(lastTurnGiven, LocalDateTime.now()).toMinutes();
+
+                    int turnsToAdd = ((int) minutesSinceLastTurn / minutesForTurnsToGive);
+
+                    if (turnsToAdd > 0) {
+                        int currentTurns = user.getTurns() == null ? 0 : user.getTurns();
+                        user.setTurns(currentTurns + turnsToAdd);
+//                user.setLastTimeTurnGiven(LocalDateTime.now().truncatedTo(java.time.temporal.ChronoUnit.SECONDS)); //this one glitches once, then works in time
+                        user.setLastTimeTurnGiven((user.getLastTimeTurnGiven().plus(turnsToAdd * minutesForTurnsToGive, ChronoUnit.MINUTES))
+                                .truncatedTo(java.time.temporal.ChronoUnit.SECONDS));
+
+                        customUserRepository.save(user);
+                    }
+                }
                 try {
                     Thread.sleep(120000); // 2*60*1000 - min
                 } catch (InterruptedException e) {
