@@ -11,6 +11,7 @@ import { UserDetailsComponent } from './components/user-details/user-details.com
 import { CityCreationComponent } from './components/city-creation/city-creation.component';
 import { CityComponent } from './components/city/city.component';
 import { BuilderRecruiterComponent } from './components/builder-recruiter/builder-recruiter.component';
+import { CityListComponent } from './components/city-list/city-list.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { BuilderRecruiterComponent } from './components/builder-recruiter/builde
     UserDetailsComponent,
     CityCreationComponent,
     CityComponent,
-    BuilderRecruiterComponent
+    BuilderRecruiterComponent,
+    CityListComponent
   ],
   imports: [
     BrowserModule,

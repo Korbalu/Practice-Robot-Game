@@ -7,6 +7,7 @@ import {CityDetailsModel} from "../models/city-details-model";
 import {BuildingCreationModel} from "../models/building-creation-model";
 import {BuildingListModel} from "../models/building-list-model";
 import {AllBuildingsListModel} from "../models/all-buildings-list-model";
+import {CityListModel} from "../models/city-list-model";
 
 const BASE_URL = "http://localhost:8080/api/city";
 
@@ -60,5 +61,11 @@ export class CityService {
     this.token = localStorage.getItem("token");
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
     return this.http.get(BASE_URL + "/newTurn", {headers});
+  }
+
+  cityLister():Observable<any>{
+    this.token = localStorage.getItem("token");
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
+    return this.http.get<Array<CityListModel>>(BASE_URL + "/allCities", {headers});
   }
 }

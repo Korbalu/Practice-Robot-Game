@@ -11,7 +11,7 @@ import {LegionListModel} from "../../models/legion-list-model";
   styleUrls: ['./city.component.css']
 })
 export class CityComponent {
-  city: CityDetailsModel = {name: "", race: "", vault: 0, area: 0, score: 0, ownerName: ""}
+  city: CityDetailsModel = {name: "", race: "", vault: 0, area: 0, score: 0, turns: 0, ownerName: ""}
   buildings: Array<BuildingListModel> = [];
   army: Array<LegionListModel> = [];
 
@@ -54,7 +54,7 @@ export class CityComponent {
 
   newTurn() {
     this.cityService.takeNewTurn().subscribe({
-      next:()  => {
+      next: () => {
       },
       error: err => {
         console.log(err)

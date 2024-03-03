@@ -13,5 +13,6 @@ public class CityDetailsDTO {
     private Long vault;
     private Long area;
     private Long score;
+    private Integer turns;
     private String ownerName;
 }

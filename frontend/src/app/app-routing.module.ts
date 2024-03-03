@@ -5,13 +5,15 @@ import {UserDetailsComponent} from "./components/user-details/user-details.compo
 import {CityCreationComponent} from "./components/city-creation/city-creation.component";
 import {CityComponent} from "./components/city/city.component";
 import {BuilderRecruiterComponent} from "./components/builder-recruiter/builder-recruiter.component";
+import {CityListComponent} from "./components/city-list/city-list.component";
 
 const routes: Routes = [
   {path:"login", component: LoginComponent},
   {path:"user-details", component: UserDetailsComponent},
   {path:"city-creation", component: CityCreationComponent},
   {path:"city", component: CityComponent},
-  {path:"builder-recruiter", component: BuilderRecruiterComponent}
+  {path:"builder-recruiter", component: BuilderRecruiterComponent},
+  {path:"city-list", component: CityListComponent}
 ];
 
 @NgModule({

@@ -2,10 +2,7 @@ package com.robotgame.service;
 
 import com.robotgame.domain.*;
 import com.robotgame.dto.incoming.CityCreationDTO;
-import com.robotgame.dto.outgoing.AllBuildingsListDTO;
-import com.robotgame.dto.outgoing.BuildingListDTO;
-import com.robotgame.dto.outgoing.CityDetailsDTO;
-import com.robotgame.dto.outgoing.RaceNameDTO;
+import com.robotgame.dto.outgoing.*;
 import com.robotgame.repository.CityRepository;
 import com.robotgame.repository.CustomUserRepository;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -15,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class CityService {
@@ -57,7 +55,7 @@ public class CityService {
         City city = cityRepository.findByOwner(owner.getId()).orElse(null);
 
         return new CityDetailsDTO(city.getName(), city.getRace().getDisplayName(), city.getVault(), city.getArea(),
-                city.getScore(), owner.getName());
+                city.getScore(), owner.getTurns(), owner.getName());
     }
 
     public List<RaceNameDTO> raceLister() {
@@ -133,6 +131,10 @@ public class CityService {
         long tax = city.getVault() * randomTaxKey / 100;
         city.setVault(city.getVault() - tax);
         cityRepository.save(city);
+    }
+
+    public List<CityListDTO> cityLister(){
+        return cityRepository.findAllOrderByScore().stream().map(CityListDTO::new).collect(Collectors.toList());
     }
 
     public void buildingScorer(String thingToScore, City city) {

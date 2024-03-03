@@ -38,7 +38,7 @@ public class ThreadToTurnScheduler {
         @Override
         public void run() {
             while (!Thread.currentThread().isInterrupted()) {
-                int minutesForTurnsToGive = 10;
+                int minutesForTurnsToGive = 5;
                 List<CustomUser> users = customUserRepository.findAll();
 
                 for (CustomUser user : users) {
@@ -49,7 +49,7 @@ public class ThreadToTurnScheduler {
 
                     if (turnsToAdd > 0) {
                         int currentTurns = user.getTurns() == null ? 0 : user.getTurns();
-                        user.setTurns(currentTurns + turnsToAdd);
+                        user.setTurns(Math.min((currentTurns + turnsToAdd), 250));
 //                user.setLastTimeTurnGiven(LocalDateTime.now().truncatedTo(java.time.temporal.ChronoUnit.SECONDS)); //this one glitches once, then works in time
                         user.setLastTimeTurnGiven((user.getLastTimeTurnGiven().plus(turnsToAdd * minutesForTurnsToGive, ChronoUnit.MINUTES))
                                 .truncatedTo(java.time.temporal.ChronoUnit.SECONDS));
@@ -58,7 +58,7 @@ public class ThreadToTurnScheduler {
                     }
                 }
                 try {
-                    Thread.sleep(120000); // 2*60*1000 - min
+                    Thread.sleep(60000); // 1*60*1000 - min
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }

@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -13,5 +14,8 @@ public interface CityRepository extends JpaRepository<City, Long> {
 
     @Query("select t from City t where t.owner.id=:id")
     Optional<City> findByOwner(@Param("id") Long id);
+
+    @Query("select c from City c order by c.score desc")
+    List<City> findAllOrderByScore();
 
 }

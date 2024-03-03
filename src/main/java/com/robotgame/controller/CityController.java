@@ -2,10 +2,7 @@ package com.robotgame.controller;
 
 import com.robotgame.dto.incoming.BuildingCreationDTO;
 import com.robotgame.dto.incoming.CityCreationDTO;
-import com.robotgame.dto.outgoing.AllBuildingsListDTO;
-import com.robotgame.dto.outgoing.BuildingListDTO;
-import com.robotgame.dto.outgoing.CityDetailsDTO;
-import com.robotgame.dto.outgoing.RaceNameDTO;
+import com.robotgame.dto.outgoing.*;
 import com.robotgame.service.CityService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -69,5 +66,11 @@ public class CityController {
     public ResponseEntity<Void> takeTurns(){
         cityService.newTurn();
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping("/allCities")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<List<CityListDTO>> cityLister(){
+        return new ResponseEntity<>(cityService.cityLister(), HttpStatus.OK);
     }
 }
