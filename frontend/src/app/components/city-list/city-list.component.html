@@ -9,7 +9,10 @@
     </tr>
     <tr class="table-bordered" *ngFor="let city of cities">
       <td>{{city.id}}</td>
-      <td>{{city.ownerName}}</td>
+      <td>
+        {{city.ownerName}}
+        <button class="btn btn-warning" (click)="toBattle(city.ownerName)">(Attack)</button>
+      </td>
       <td>{{city.race}}</td>
       <td>{{city.score}}</td>
     </tr>

@@ -1,5 +1,6 @@
 package com.robotgame.controller;
 
+import com.robotgame.dto.incoming.BattleDTO;
 import com.robotgame.dto.incoming.LegionCreationDTO;
 import com.robotgame.dto.outgoing.LegionListDTO;
 import com.robotgame.dto.outgoing.UnitListDTO;
@@ -37,5 +38,12 @@ public class ArmyController {
     @PreAuthorize("hasAnyRole('ROLE_USER')")
     public ResponseEntity<List<UnitListDTO>> unitLister(){
         return new ResponseEntity<>(armyService.unitLister(), HttpStatus.OK);
+    }
+
+    @PostMapping("/battle")
+    @PreAuthorize("hasAnyRole('ROLE_USER')")
+    public ResponseEntity<Void> toBattle(@RequestBody BattleDTO enemy){
+        armyService.battle(enemy.getEnemyName());
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

@@ -69,4 +69,70 @@ public class ArmyService {
         city.setScore(city.getScore() + Unit.valueOf(thingToScore).getScore() * quantity);
         cityRepository.save(city);
     }
+
+    public void battle(String enemyName) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails loggedInUser = (UserDetails) authentication.getPrincipal();
+        CustomUser owner = customUserRepository.findByMail(loggedInUser.getUsername()).orElse(null);
+
+        List<Legion> ownArmy = armyRepository.findAllByOwner(owner.getId());
+
+        List<Legion> enemyArmy = armyRepository.findAllByOwnerName(enemyName);
+        long totalUnitCountEnemy = armyRepository.findUnitQuantity(enemyName);
+
+        for (Legion legion : ownArmy) {
+            for (Legion legion1 : enemyArmy) {
+                Legion legionDB = armyRepository.findByOwnerAndType(owner.getId(), legion.getType());
+                Legion legion2DB = armyRepository.findByOwnerNameAndType(enemyName, legion1.getType());
+
+                boolean sameDefense = legion.getType().getAttackType().equals(legion1.getType().getArmorType());
+                boolean sameDefense2 = legion1.getType().getAttackType().equals(legion.getType().getArmorType());
+
+                long totalLegionAttack = legion.getQuantity() * legion.getType().getAttack();
+                long partialLegionAttack;
+
+                if (sameDefense) {
+                    partialLegionAttack = Math.round(totalLegionAttack * (legion1.getQuantity() / totalUnitCountEnemy) * 0.5);
+                } else {
+                    partialLegionAttack = Math.round(totalLegionAttack * (legion1.getQuantity() / totalUnitCountEnemy));
+                }
+
+                int singleStructureEnemy = legion1.getType().getStructure();
+                long defendingLegion = legion1.getQuantity();
+                int singleStructureOwn = legion.getType().getStructure();
+                long attackingLegion = legion.getQuantity();
+                while (partialLegionAttack >= 0 && defendingLegion > 0) {
+                    partialLegionAttack -= legion.getType().getAttack();
+                    if (sameDefense) {
+                        singleStructureEnemy -= Math.max(legion.getType().getAttack() * 0.5 - legion1.getType().getArmor(), 1);
+                    } else {
+                        singleStructureEnemy -= Math.max(legion.getType().getAttack() - legion1.getType().getArmor(), 1);
+                    }
+                    if (singleStructureEnemy <= 0) {
+                        singleStructureEnemy = legion1.getType().getStructure();
+                        defendingLegion -= 1;
+                    }
+                    if (sameDefense2) {
+                        singleStructureOwn -= legion1.getType().getAttack() * 0.5 - legion.getType().getArmor();
+                    } else {
+                        singleStructureOwn -= legion1.getType().getAttack() - legion.getType().getArmor();
+                    }
+                    if (singleStructureOwn <= 0) {
+                        singleStructureOwn = legion.getType().getStructure();
+                        attackingLegion -= 1;
+                    }
+                }
+
+                legion1.setQuantity(defendingLegion > 0 ? defendingLegion : 0);
+                legion.setQuantity(attackingLegion > 0 ? attackingLegion : 0);
+
+                legionDB.setQuantity(legion.getQuantity());
+                legion2DB.setQuantity(legion1.getQuantity());
+
+                armyRepository.save(legionDB);
+                armyRepository.save(legion2DB);
+            }
+        }
+        armyRepository.deleteAllByQuantity(0L);
+    }
 }
