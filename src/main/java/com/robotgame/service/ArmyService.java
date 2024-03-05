@@ -1,14 +1,13 @@
 package com.robotgame.service;
 
-import com.robotgame.domain.City;
-import com.robotgame.domain.CustomUser;
-import com.robotgame.domain.Legion;
-import com.robotgame.domain.Unit;
+import com.robotgame.domain.*;
 import com.robotgame.dto.outgoing.LegionListDTO;
 import com.robotgame.dto.outgoing.UnitListDTO;
 import com.robotgame.repository.ArmyRepository;
 import com.robotgame.repository.CityRepository;
 import com.robotgame.repository.CustomUserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,6 +22,7 @@ public class ArmyService {
     private ArmyRepository armyRepository;
     private CustomUserRepository customUserRepository;
     private CityRepository cityRepository;
+    private static final Logger logger = LoggerFactory.getLogger(ArmyService.class);
 
     public ArmyService(ArmyRepository armyRepository, CustomUserRepository customUserRepository, CityRepository cityRepository) {
         this.armyRepository = armyRepository;
@@ -70,15 +70,21 @@ public class ArmyService {
         cityRepository.save(city);
     }
 
-    public void battle(String enemyName) {
+    public void battle(String enemyName, String attackType) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails loggedInUser = (UserDetails) authentication.getPrincipal();
         CustomUser owner = customUserRepository.findByMail(loggedInUser.getUsername()).orElse(null);
 
-        List<Legion> ownArmy = armyRepository.findAllByOwner(owner.getId());
+        City ownCity = cityRepository.findByOwner(owner.getId()).orElse(null);
+        City enemyCity = cityRepository.findByOwnerName(enemyName).orElse(null);
 
+        List<Legion> ownArmy = armyRepository.findAllByOwner(owner.getId());
         List<Legion> enemyArmy = armyRepository.findAllByOwnerName(enemyName);
-        long totalUnitCountEnemy = armyRepository.findUnitQuantity(enemyName);
+
+        long totalUnitCountEnemy = armyRepository.findUnitQuantity(enemyName) == null ? 0 : armyRepository.findUnitQuantity(enemyName);
+
+        long ownScoreLoss = 0;
+        long enemyScoreLoss = 0;
 
         for (Legion legion : ownArmy) {
             for (Legion legion1 : enemyArmy) {
@@ -101,16 +107,23 @@ public class ArmyService {
                 long defendingLegion = legion1.getQuantity();
                 int singleStructureOwn = legion.getType().getStructure();
                 long attackingLegion = legion.getQuantity();
+
                 while (partialLegionAttack >= 0 && defendingLegion > 0) {
                     partialLegionAttack -= legion.getType().getAttack();
+                    int defendersArmor = legion1.getType().getArmor();
+                    if (enemyCity.getBuildings().containsKey(Building.WALL)) {
+                        defendersArmor *= 1.01 * enemyCity.getBuildings().get(Building.WALL);
+                    }
                     if (sameDefense) {
-                        singleStructureEnemy -= Math.max(legion.getType().getAttack() * 0.5 - legion1.getType().getArmor(), 1);
+                        singleStructureEnemy -= Math.max(legion.getType().getAttack() * 0.5 - defendersArmor, 1);
                     } else {
-                        singleStructureEnemy -= Math.max(legion.getType().getAttack() - legion1.getType().getArmor(), 1);
+                        singleStructureEnemy -= Math.max(legion.getType().getAttack() - defendersArmor, 1);
                     }
                     if (singleStructureEnemy <= 0) {
                         singleStructureEnemy = legion1.getType().getStructure();
                         defendingLegion -= 1;
+                        enemyScoreLoss += legion2DB.getType().getScore();
+                        enemyCity.setScore(enemyCity.getScore() - legion2DB.getType().getScore());
                     }
                     if (sameDefense2) {
                         singleStructureOwn -= legion1.getType().getAttack() * 0.5 - legion.getType().getArmor();
@@ -120,6 +133,8 @@ public class ArmyService {
                     if (singleStructureOwn <= 0) {
                         singleStructureOwn = legion.getType().getStructure();
                         attackingLegion -= 1;
+                        ownScoreLoss += legionDB.getType().getScore();
+                        ownCity.setScore(ownCity.getScore() - legionDB.getType().getScore());
                     }
                 }
 
@@ -128,9 +143,21 @@ public class ArmyService {
 
                 legionDB.setQuantity(legion.getQuantity());
                 legion2DB.setQuantity(legion1.getQuantity());
+            }
+        }
 
-                armyRepository.save(legionDB);
-                armyRepository.save(legion2DB);
+        if (ownScoreLoss < enemyScoreLoss || ownScoreLoss == 0) {
+            if (attackType.equals("conquer")) {
+                logger.info("Battle started between {} and {}", ownCity.getName(), enemyCity.getName());
+                long areaGain = Math.max(Math.round(enemyCity.getArea() * 0.05), 1);
+                enemyCity.setArea(enemyCity.getArea() - areaGain);
+                ownCity.setArea(ownCity.getArea() + areaGain);
+            } else if (attackType.equals("raid")) {
+                System.out.println("raid working");
+                long wealthGain = Math.round(enemyCity.getVault() * 0.1);
+                enemyCity.setVault(enemyCity.getVault() - wealthGain);
+                ownCity.setVault(ownCity.getVault() + wealthGain);
+
             }
         }
         armyRepository.deleteAllByQuantity(0L);

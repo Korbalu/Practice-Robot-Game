@@ -7,4 +7,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class BattleDTO {
     private String enemyName;
+    private String attackType;
 }

@@ -118,19 +118,18 @@ public class CityService {
         customUserRepository.save(owner);
     }
 
-    @Scheduled(cron = "0 0 0 * * ?") // it only works, if the app runs at midnight!!!
+    @Scheduled(cron = "0 17 0 * * ?") // it only works, if the app runs at 0:17!!!
     public void vaultDecreaser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetails loggedInUser = (UserDetails) authentication.getPrincipal();
-        CustomUser owner = customUserRepository.findByMail(loggedInUser.getUsername()).orElse(null);
-
-        City city = cityRepository.findByOwner(owner.getId()).orElse(null);
+        List<City> cities = cityRepository.findAll();
 
         Random random = new Random();
         int randomTaxKey = 1 + random.nextInt(5);
-        long tax = city.getVault() * randomTaxKey / 100;
-        city.setVault(city.getVault() - tax);
-        cityRepository.save(city);
+        for (City city : cities) {
+            long tax = city.getVault() * randomTaxKey / 100;
+            city.setVault(city.getVault() - tax);
+            cityRepository.save(city);
+        }
+        System.out.println("taxing done");
     }
 
     public List<CityListDTO> cityLister(){

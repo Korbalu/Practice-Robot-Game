@@ -40,10 +40,10 @@ public class ArmyController {
         return new ResponseEntity<>(armyService.unitLister(), HttpStatus.OK);
     }
 
-    @PostMapping("/battle")
+    @PutMapping("/battle")
     @PreAuthorize("hasAnyRole('ROLE_USER')")
     public ResponseEntity<Void> toBattle(@RequestBody BattleDTO enemy){
-        armyService.battle(enemy.getEnemyName());
+        armyService.battle(enemy.getEnemyName(), enemy.getAttackType());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

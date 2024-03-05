@@ -30,8 +30,8 @@ export class CityListComponent {
     })
   }
 
-  toBattle(enemy: string) {
-    let enemyName: BattleModel = {enemyName: enemy}
+  toBattle(enemy: string, attack: string) {
+    let enemyName: BattleModel = {enemyName: enemy, attackType: attack}
     this.armyService.battleer(enemyName).subscribe({
       next: () => {
       },

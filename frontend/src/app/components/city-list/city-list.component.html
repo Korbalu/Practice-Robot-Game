@@ -11,7 +11,8 @@
       <td>{{city.id}}</td>
       <td>
         {{city.ownerName}}
-        <button class="btn btn-warning" (click)="toBattle(city.ownerName)">(Attack)</button>
+        <button class="btn btn-warning" style="margin: 4px" (click)="toBattle(city.ownerName, 'conquer')">(Conquer)</button>
+        <button class="btn btn-warning" (click)="toBattle(city.ownerName, 'raid')">(Raid)</button>
       </td>
       <td>{{city.race}}</td>
       <td>{{city.score}}</td>

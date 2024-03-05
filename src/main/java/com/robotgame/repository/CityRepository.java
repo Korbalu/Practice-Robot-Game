@@ -15,6 +15,9 @@ public interface CityRepository extends JpaRepository<City, Long> {
     @Query("select t from City t where t.owner.id=:id")
     Optional<City> findByOwner(@Param("id") Long id);
 
+    @Query("select t from City t where t.owner.name=:name")
+    Optional<City> findByOwnerName(@Param("name") String name);
+
     @Query("select c from City c order by c.score desc")
     List<City> findAllOrderByScore();
 

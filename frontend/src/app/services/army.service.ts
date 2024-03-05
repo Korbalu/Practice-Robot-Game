@@ -39,6 +39,6 @@ export class ArmyService {
   battleer(enemy: BattleModel):Observable<any>{
     this.token = localStorage.getItem("token");
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
-    return this.http.post(BASE_URL + "/battle", enemy, {headers});
+    return this.http.put(BASE_URL + "/battle", enemy, {headers});
   }
 }
