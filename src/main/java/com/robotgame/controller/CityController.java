@@ -73,4 +73,10 @@ public class CityController {
     public ResponseEntity<List<CityListDTO>> cityLister(){
         return new ResponseEntity<>(cityService.cityLister(), HttpStatus.OK);
     }
+
+    @GetMapping("/user")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<LoggedInUserDetailsDTO> userDetailer(){
+        return new ResponseEntity<>(cityService.userDetailer(), HttpStatus.OK);
+    }
 }

@@ -136,6 +136,16 @@ public class CityService {
         return cityRepository.findAllOrderByScore().stream().map(CityListDTO::new).collect(Collectors.toList());
     }
 
+    public LoggedInUserDetailsDTO userDetailer(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails loggedInUser = (UserDetails) authentication.getPrincipal();
+        CustomUser owner = customUserRepository.findByMail(loggedInUser.getUsername()).orElse(null);
+
+        City city = cityRepository.findByOwner(owner.getId()).orElse(null);
+
+        return new LoggedInUserDetailsDTO(owner.getId(), city.getId(), owner.getName(), city.getName(), city.getVault(), city.getScore());
+    }
+
     public void buildingScorer(String thingToScore, City city) {
         city.setScore(city.getScore() + Building.valueOf(thingToScore.toUpperCase()).getScore());
     }

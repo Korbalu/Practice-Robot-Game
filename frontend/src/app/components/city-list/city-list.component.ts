@@ -12,6 +12,7 @@ import {BattleModel} from "../../models/battle-model";
 export class CityListComponent {
 
   cities: Array<CityListModel> = [];
+  userName: string = "";
 
   constructor(private cityService: CityService, private armyService: ArmyService) {
 
@@ -21,6 +22,16 @@ export class CityListComponent {
     this.cityService.cityLister().subscribe({
       next: (data) => {
         this.cities = data;
+      },
+      error: err => {
+        console.log(err)
+      },
+      complete: () => {
+      }
+    })
+    this.cityService.userDetailer().subscribe({
+      next: (data) => {
+        this.userName = data.userName;
       },
       error: err => {
         console.log(err)
