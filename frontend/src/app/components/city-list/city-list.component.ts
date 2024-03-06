@@ -54,4 +54,17 @@ export class CityListComponent {
       }
     })
   }
+
+  creator(){
+    this.cityService.autoCityCreator().subscribe({
+      next: () => {
+      },
+      error: err => {
+        console.log(err)
+      },
+      complete: () => {
+        console.log("city Created.")
+      }
+    })
+  }
 }

@@ -79,4 +79,11 @@ public class CityController {
     public ResponseEntity<LoggedInUserDetailsDTO> userDetailer(){
         return new ResponseEntity<>(cityService.userDetailer(), HttpStatus.OK);
     }
+
+    @GetMapping("/autoCity")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<Void> createAutoCity(){
+        cityService.autoUserCityCreator();
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

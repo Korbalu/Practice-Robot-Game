@@ -40,6 +40,16 @@ public class City {
         this.buildings = new HashMap<>();
     }
 
+    public City(String name, Race race, CustomUser owner) {
+        this.name = name;
+        this.vault = 1000L;
+        this.score = 0L;
+        this.race = race;
+        this.area = 50L;
+        this.owner = owner;
+        this.buildings = new HashMap<>();
+    }
+
     @Override
     public String toString() {
         return "City{" +

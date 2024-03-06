@@ -86,29 +86,5 @@ public class CustomUserService {
         return roleSenderDTO;
     }
 
-    //    @Scheduled(fixedRate = 60000) // 1 minute interval (1 * 60 * 1000 milliseconds)
-    public void giveTurnsToUsers() {
-        int minutesForTurnsToGive = 2;
-        List<CustomUser> users = customUserRepository.findAll();
 
-        for (CustomUser user : users) {
-            LocalDateTime lastTurnGiven = user.getLastTimeTurnGiven();
-            long minutesSinceLastTurn = Duration.between(lastTurnGiven, LocalDateTime.now()).toMinutes();
-
-            int turnsToAdd = ((int) minutesSinceLastTurn / minutesForTurnsToGive);
-
-            if (turnsToAdd > 0) {
-                int currentTurns = user.getTurns() == null ? 0 : user.getTurns();
-                user.setTurns(currentTurns + turnsToAdd);
-//                user.setLastTimeTurnGiven(LocalDateTime.now().minusMinutes(minutesSinceLastTurn % 2));
-//                user.setLastTimeTurnGiven(LocalDateTime.now().truncatedTo(java.time.temporal.ChronoUnit.SECONDS));
-                user.setLastTimeTurnGiven((user.getLastTimeTurnGiven().plus(turnsToAdd * minutesForTurnsToGive, ChronoUnit.MINUTES))
-                        .truncatedTo(java.time.temporal.ChronoUnit.SECONDS));
-
-                System.out.println("turngiver activated");
-
-                customUserRepository.save(user);
-            }
-        }
-    }
 }

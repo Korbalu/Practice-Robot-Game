@@ -75,4 +75,11 @@ export class CityService {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
     return this.http.get<LoggedInUserDetails>(BASE_URL + "/user", {headers})
   }
+
+  autoCityCreator():Observable<any>{
+    this.token = localStorage.getItem("token");
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
+    return this.http.get(BASE_URL + "/autoCity", {headers})
+  }
+
 }

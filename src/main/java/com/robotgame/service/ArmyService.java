@@ -147,17 +147,15 @@ public class ArmyService {
         }
 
         if (ownScoreLoss < enemyScoreLoss || ownScoreLoss == 0) {
+            logger.info("Battle started between {} and {}", ownCity.getName(), enemyCity.getName());
             if (attackType.equals("conquer")) {
-                logger.info("Battle started between {} and {}", ownCity.getName(), enemyCity.getName());
                 long areaGain = Math.max(Math.round(enemyCity.getArea() * 0.05), 1);
                 enemyCity.setArea(enemyCity.getArea() - areaGain);
                 ownCity.setArea(ownCity.getArea() + areaGain);
             } else if (attackType.equals("raid")) {
-                System.out.println("raid working");
                 long wealthGain = Math.round(enemyCity.getVault() * 0.1);
                 enemyCity.setVault(enemyCity.getVault() - wealthGain);
                 ownCity.setVault(ownCity.getVault() + wealthGain);
-
             }
         }
         armyRepository.deleteAllByQuantity(0L);
