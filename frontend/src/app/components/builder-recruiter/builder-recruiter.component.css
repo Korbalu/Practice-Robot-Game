@@ -1,3 +1,7 @@
+.vaulter{
+  padding: 10px;
+  margin: 10px;
+}
 .details {
   flex-direction: column;
   padding: 10px;

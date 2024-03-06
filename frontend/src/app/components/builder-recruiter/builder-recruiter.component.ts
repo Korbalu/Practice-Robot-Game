@@ -14,6 +14,7 @@ import {BuildingCreationModel} from "../../models/building-creation-model";
 export class BuilderRecruiterComponent {
   units: Array<UnitListModel> = [];
   buildings: Array<AllBuildingsListModel> = [];
+  myVault: number = 0;
 
   constructor(private cityService: CityService, private armyService: ArmyService) {
 
@@ -40,6 +41,16 @@ export class BuilderRecruiterComponent {
       complete: () => {
       }
     })
+    this.cityService.userDetailer().subscribe({
+      next: (data) => {
+        this.myVault = data.vault;
+      },
+      error: err => {
+        console.log(err)
+      },
+      complete: () => {
+      }
+    })
   }
 
   recruiter(quantityP: number, unitP:string){
@@ -51,6 +62,7 @@ export class BuilderRecruiterComponent {
         console.log(err)
       },
       complete: () => {
+        this.ngOnInit();
       }
     })
   }
@@ -64,7 +76,7 @@ export class BuilderRecruiterComponent {
         console.log(err)
       },
       complete: () => {
-        console.log("Building Built")
+        this.ngOnInit()
       }
     })
   }
