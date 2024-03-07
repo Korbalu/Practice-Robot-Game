@@ -50,7 +50,8 @@ public class ArmyService {
                 armyRepository.save(legion);
             }
         }
-        unitScorer(unit, city, quantity);
+        cityRepository.save(city);
+//        unitScorer(unit, city, quantity);
     }
 
     public List<LegionListDTO> armyLister() {

@@ -93,7 +93,7 @@ public class CityService {
             city.setArea(city.getArea() - 1);
             buildingScorer(building, city);
         }
-        cityRepository.save(city);
+        scorer(city, owner);
     }
 
     public List<BuildingListDTO> buildingLister() {
@@ -124,10 +124,12 @@ public class CityService {
         for (Map.Entry<Building, Long> building : city.getBuildings().entrySet()) {
             if (building.getKey().equals(Building.CRYSTALMINE)) {
                 city.setVault(city.getVault() + building.getKey().getProduction() * building.getValue());
+
             }
             if (building.getKey().equals(Building.FACTORY)) {
                 armyService.increaseUnit(Unit.LightBot.getDisplayName(), (long) building.getKey().getProduction() * building.getValue());
                 city.setVault(city.getVault() + Unit.LightBot.getCost() * building.getKey().getProduction() * building.getValue());
+
             }
         }
         cityRepository.save(city);
@@ -190,7 +192,7 @@ public class CityService {
             default -> null;
         };
 
-        City city = new City("autoCity" + counter, race, autoUser);
+        City city = new City("AutoCity" + counter, race, autoUser);
         cityRepository.save(city);
 
         counter++;
@@ -200,7 +202,7 @@ public class CityService {
 
         while (city.getVault() > 100) {
             int decider = random.nextInt(100);
-            if (decider < 30) {
+            if (decider < 20) {
                 int buildingIndex = random.nextInt(buildings.length);
                 String randomBuilding = buildings[buildingIndex].getDisplayName();
                 city.getBuildings().computeIfPresent(Building.valueOf(randomBuilding.toUpperCase()), (k, v) -> v + 1);
@@ -211,18 +213,30 @@ public class CityService {
                 int unitIndex = random.nextInt(units.length);
                 String randomUnit = units[unitIndex].getDisplayName();
                 Legion legion = armyRepository.findByOwnerAndType(autoUser.getId(), Unit.valueOf(randomUnit));
-                if (city.getVault() >= Unit.valueOf(randomUnit).getCost()) {
-                    if (legion == null) {
-                        Legion legion2 = new Legion(Unit.valueOf(randomUnit), 1L, city.getRace(), autoUser);
-                        city.setVault(city.getVault() - Unit.valueOf(randomUnit).getCost());
-                        armyRepository.save(legion2);
-                    } else {
-                        city.setVault(city.getVault() - Unit.valueOf(randomUnit).getCost());
-                        legion.setQuantity(legion.getQuantity() + 1L);
-                        armyRepository.save(legion);
-                    }
+                if (legion == null) {
+                    Legion legion2 = new Legion(Unit.valueOf(randomUnit), 1L, city.getRace(), autoUser);
+                    city.setVault(city.getVault() - Unit.valueOf(randomUnit).getCost());
+                    armyRepository.save(legion2);
+                } else {
+                    city.setVault(city.getVault() - Unit.valueOf(randomUnit).getCost());
+                    legion.setQuantity(legion.getQuantity() + 1L);
+                    armyRepository.save(legion);
                 }
             }
+            cityRepository.save(city);
         }
+        scorer(city, autoUser);
+    }
+
+    public void scorer(City city, CustomUser owner) {
+        long finalScore = 0;
+        for (Map.Entry<Building, Long> building : city.getBuildings().entrySet()) {
+            finalScore += building.getValue() * building.getKey().getScore();
+        }
+        for (Legion legion : owner.getArmy()) {
+            finalScore += legion.getType().getScore() * legion.getQuantity();
+        }
+        city.setScore(finalScore);
+        cityRepository.save(city);
     }
 }
