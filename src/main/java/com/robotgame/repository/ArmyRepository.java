@@ -30,4 +30,7 @@ public interface ArmyRepository extends JpaRepository<Legion, Long> {
     @Query("delete from Legion l where l.quantity =:amount")
     void deleteAllByQuantity(@Param("amount") Long amount);
 
+    @Query("select l from Legion l where l.type =:type")
+    List<Legion> findALLByType(@Param("type") Unit type);
+
 }

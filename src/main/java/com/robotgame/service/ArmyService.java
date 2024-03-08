@@ -51,7 +51,6 @@ public class ArmyService {
                 armyRepository.save(legion);
             }
         }
-//        cityRepository.save(city);
         unitScorer(unit, city, quantity);
     }
 
@@ -64,7 +63,17 @@ public class ArmyService {
     }
 
     public List<UnitListDTO> unitLister() {
-        return Arrays.stream(Unit.values()).filter(Unit::isBuyable).map(UnitListDTO::new).toList();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails loggedInUser = (UserDetails) authentication.getPrincipal();
+        CustomUser owner = customUserRepository.findByMail(loggedInUser.getUsername()).orElse(null);
+
+        City city = cityRepository.findByOwner(owner.getId()).orElse(null);
+
+        return Arrays.stream(Unit.values())
+                .filter(Unit::isBuyable)
+                .filter(unit -> unit.getRaceConnect().equals(city.getRace().getDisplayName()) || unit.getRaceConnect().equals("None"))
+                .map(UnitListDTO::new)
+                .toList();
     }
 
     public void unitScorer(String thingToScore, City city, Long quantity) {
@@ -80,7 +89,7 @@ public class ArmyService {
         City ownCity = cityRepository.findByOwner(owner.getId()).orElse(null);
         City enemyCity = cityRepository.findByOwnerName(enemyName).orElse(null);
 
-        List<Legion> ownArmy = armyRepository.findAllByOwner(owner.getId());
+        List<Legion> ownArmy = armyRepository.findAllByOwner(owner.getId()); //Sort from Repository side based on attack type
         List<Legion> enemyArmy = armyRepository.findAllByOwnerName(enemyName);
 
         long totalUnitCountEnemy = armyRepository.findUnitQuantity(enemyName) == null ? 0 : armyRepository.findUnitQuantity(enemyName);
@@ -174,7 +183,6 @@ public class ArmyService {
             legion.setQuantity(legion.getQuantity() + quantity);
             armyRepository.save(legion);
         }
-
     }
 
     public void scorer(City city, CustomUser owner) {

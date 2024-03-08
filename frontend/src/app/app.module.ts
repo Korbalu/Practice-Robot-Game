@@ -12,6 +12,7 @@ import { CityCreationComponent } from './components/city-creation/city-creation.
 import { CityComponent } from './components/city/city.component';
 import { BuilderRecruiterComponent } from './components/builder-recruiter/builder-recruiter.component';
 import { CityListComponent } from './components/city-list/city-list.component';
+import { MarketComponent } from './components/market/market.component';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { CityListComponent } from './components/city-list/city-list.component';
     CityCreationComponent,
     CityComponent,
     BuilderRecruiterComponent,
-    CityListComponent
+    CityListComponent,
+    MarketComponent
   ],
   imports: [
     BrowserModule,

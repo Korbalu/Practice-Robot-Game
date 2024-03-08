@@ -71,9 +71,6 @@ public class CustomUserService {
     }
 
     public List<UserListDTO> usersLister() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetails loggedInUser = (UserDetails) authentication.getPrincipal();
-        CustomUser owner = customUserRepository.findByMail(loggedInUser.getUsername()).orElse(null);
         return customUserRepository.findAll().stream().map(UserListDTO::new).collect(Collectors.toList());
     }
 

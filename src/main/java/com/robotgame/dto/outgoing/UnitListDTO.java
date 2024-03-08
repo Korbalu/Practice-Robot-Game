@@ -14,6 +14,7 @@ public class UnitListDTO {
     private Integer structure;
     private String attackType;
     private String armorType;
+    private String raceConnect;
     private Integer cost;
 
     public UnitListDTO(Unit unit) {
@@ -23,6 +24,7 @@ public class UnitListDTO {
         this.structure = unit.getStructure();
         this.attackType = unit.getAttackType();
         this.armorType = unit.getArmorType();
+        this.raceConnect = unit.getRaceConnect();
         this.cost = unit.getCost();
     }
 }

@@ -5,5 +5,6 @@ export interface UnitListModel {
   structure: number;
   attackType: string;
   armorType: string;
+  raceConnect: string;
   cost: number;
 }

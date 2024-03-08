@@ -131,13 +131,13 @@ public class CityService {
                 armyService.factoryIncrease(city, owner, Unit.LightBot.getDisplayName(), building.getKey().getProduction() * building.getValue());
             }
         }
-        armyService.scorer(city,owner);
+        armyService.scorer(city, owner);
         cityRepository.save(city);
         owner.setTurns(owner.getTurns() - 1);
         customUserRepository.save(owner);
     }
 
-    @Scheduled(cron = "0 17 0 * * ?")
+    @Scheduled(cron = "0 5 0 * * ?")
     // it only works, if the app runs at 0:17!!! alternative: @Scheduled(fixedRate = 60000) // 1 minute interval
     public void vaultDecreaser() {
         List<City> cities = cityRepository.findAll();
@@ -150,6 +150,15 @@ public class CityService {
             cityRepository.save(city);
         }
         System.out.println("taxing done");
+
+        List<Legion> allLightBotLegions = armyRepository.findALLByType(Unit.LightBot);
+        for (Legion lightBotLegion : allLightBotLegions) {
+            lightBotLegion.setQuantity((long) (lightBotLegion.getQuantity() * 0.8));
+            Legion legion2 = new Legion(Unit.LightBotUpg, (long) (lightBotLegion.getQuantity() * (1- 0.8)), lightBotLegion.getRace(), lightBotLegion.getOwner());
+            armyRepository.save(lightBotLegion);
+            armyRepository.save(legion2);
+            System.out.println("armies changed");
+        }
     }
 
     public List<CityListDTO> cityLister() {
