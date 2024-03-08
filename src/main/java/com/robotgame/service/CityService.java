@@ -5,6 +5,7 @@ import com.robotgame.dto.incoming.CityCreationDTO;
 import com.robotgame.dto.outgoing.*;
 import com.robotgame.repository.ArmyRepository;
 import com.robotgame.repository.CityRepository;
+import com.robotgame.repository.CounterEntityRepository;
 import com.robotgame.repository.CustomUserRepository;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
@@ -25,15 +26,16 @@ public class CityService {
     private ArmyRepository armyRepository;
     private ArmyService armyService;
 
-    private static Long counter = 1L;
     private PasswordEncoder passwordEncoder;
+    private CounterEntityRepository counterEntityRepository;
 
-    public CityService(CityRepository cityRepository, CustomUserRepository customUserRepository, ArmyRepository armyRepository, ArmyService armyService, PasswordEncoder passwordEncoder) {
+    public CityService(CityRepository cityRepository, CustomUserRepository customUserRepository, ArmyRepository armyRepository, ArmyService armyService, PasswordEncoder passwordEncoder, CounterEntityRepository counterEntityRepository) {
         this.cityRepository = cityRepository;
         this.customUserRepository = customUserRepository;
         this.armyRepository = armyRepository;
         this.armyService = armyService;
         this.passwordEncoder = passwordEncoder;
+        this.counterEntityRepository = counterEntityRepository;
     }
 
     public void cityCreator(CityCreationDTO CCDTO) {
@@ -124,14 +126,12 @@ public class CityService {
         for (Map.Entry<Building, Long> building : city.getBuildings().entrySet()) {
             if (building.getKey().equals(Building.CRYSTALMINE)) {
                 city.setVault(city.getVault() + building.getKey().getProduction() * building.getValue());
-
             }
             if (building.getKey().equals(Building.FACTORY)) {
-                armyService.increaseUnit(Unit.LightBot.getDisplayName(), (long) building.getKey().getProduction() * building.getValue());
-                city.setVault(city.getVault() + Unit.LightBot.getCost() * building.getKey().getProduction() * building.getValue());
-
+                armyService.factoryIncrease(city, owner, Unit.LightBot.getDisplayName(), building.getKey().getProduction() * building.getValue());
             }
         }
+        scorer(city,owner);
         cityRepository.save(city);
         owner.setTurns(owner.getTurns() - 1);
         customUserRepository.save(owner);
@@ -171,14 +171,18 @@ public class CityService {
     }
 
     public void autoUserCityCreator() {
+        CounterEntity counterEntity = new CounterEntity();
+        counterEntityRepository.save(counterEntity);
+
         CustomUser autoUser = new CustomUser();
-        autoUser.setName("AutoUser" + counter);
-        autoUser.setEmail("AutoEmail" + counter);
-        autoUser.setPassword(passwordEncoder.encode("pass" + counter));
+        autoUser.setName("AutoUser" + counterEntity.getId());
+        autoUser.setEmail("AutoEmail" + counterEntity.getId());
+        autoUser.setPassword(passwordEncoder.encode("pass" + counterEntity.getId()));
         autoUser.setTurns(50);
         autoUser.setRole(UserRole.ROLE_USER);
         autoUser.setCreatedAt(LocalDateTime.now());
         autoUser.setLastTimeTurnGiven(LocalDateTime.now());
+        autoUser.setArmy(new ArrayList<>());
         customUserRepository.save(autoUser);
 
         Random random = new Random();
@@ -192,10 +196,8 @@ public class CityService {
             default -> null;
         };
 
-        City city = new City("AutoCity" + counter, race, autoUser);
+        City city = new City("AutoCity" + counterEntity.getId(), race, autoUser);
         cityRepository.save(city);
-
-        counter++;
 
         Building[] buildings = Building.values();
         Unit[] units = Unit.values();

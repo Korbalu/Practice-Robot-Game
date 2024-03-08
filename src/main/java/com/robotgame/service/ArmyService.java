@@ -50,8 +50,8 @@ public class ArmyService {
                 armyRepository.save(legion);
             }
         }
-        cityRepository.save(city);
-//        unitScorer(unit, city, quantity);
+//        cityRepository.save(city);
+        unitScorer(unit, city, quantity);
     }
 
     public List<LegionListDTO> armyLister() {
@@ -160,5 +160,18 @@ public class ArmyService {
             }
         }
         armyRepository.deleteAllByQuantity(0L);
+    }
+
+    public void factoryIncrease(City city, CustomUser owner, String unit, Long quantity) {
+        Legion legion = armyRepository.findByOwnerAndType(owner.getId(), Unit.valueOf(unit));
+
+        if (legion == null) {
+            Legion legion2 = new Legion(Unit.valueOf(unit), quantity, city.getRace(), owner);
+            armyRepository.save(legion2);
+        } else {
+            legion.setQuantity(legion.getQuantity() + quantity);
+            armyRepository.save(legion);
+        }
+
     }
 }
