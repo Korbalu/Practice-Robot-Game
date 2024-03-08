@@ -95,7 +95,7 @@ public class CityService {
             city.setArea(city.getArea() - 1);
             buildingScorer(building, city);
         }
-        scorer(city, owner);
+        armyService.scorer(city, owner);
     }
 
     public List<BuildingListDTO> buildingLister() {
@@ -131,7 +131,7 @@ public class CityService {
                 armyService.factoryIncrease(city, owner, Unit.LightBot.getDisplayName(), building.getKey().getProduction() * building.getValue());
             }
         }
-        scorer(city,owner);
+        armyService.scorer(city,owner);
         cityRepository.save(city);
         owner.setTurns(owner.getTurns() - 1);
         customUserRepository.save(owner);
@@ -143,7 +143,7 @@ public class CityService {
         List<City> cities = cityRepository.findAll();
 
         Random random = new Random();
-        int randomTaxKey = 1 + random.nextInt(5);
+        int randomTaxKey = 1 + random.nextInt(8);
         for (City city : cities) {
             long tax = city.getVault() * randomTaxKey / 100;
             city.setVault(city.getVault() - tax);
@@ -227,7 +227,7 @@ public class CityService {
             }
             cityRepository.save(city);
         }
-        scorer(city, autoUser);
+        armyService.scorer(city, autoUser);
     }
 
     public void scorer(City city, CustomUser owner) {

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class ArmyService {
@@ -63,7 +64,7 @@ public class ArmyService {
     }
 
     public List<UnitListDTO> unitLister() {
-        return Arrays.stream(Unit.values()).map(UnitListDTO::new).toList();
+        return Arrays.stream(Unit.values()).filter(Unit::isBuyable).map(UnitListDTO::new).toList();
     }
 
     public void unitScorer(String thingToScore, City city, Long quantity) {
@@ -135,7 +136,7 @@ public class ArmyService {
                         singleStructureOwn = legion.getType().getStructure();
                         attackingLegion -= 1;
                         ownScoreLoss += legionDB.getType().getScore();
-                        ownCity.setScore(ownCity.getScore() - legionDB.getType().getScore());
+                        ownCity.setScore(ownCity.getScore() - legionDB.getType().getScore()); // in theory its deletable
                     }
                 }
 
@@ -160,6 +161,7 @@ public class ArmyService {
             }
         }
         armyRepository.deleteAllByQuantity(0L);
+        scorer(ownCity, owner);
     }
 
     public void factoryIncrease(City city, CustomUser owner, String unit, Long quantity) {
@@ -173,5 +175,17 @@ public class ArmyService {
             armyRepository.save(legion);
         }
 
+    }
+
+    public void scorer(City city, CustomUser owner) {
+        long finalScore = 0;
+        for (Map.Entry<Building, Long> building : city.getBuildings().entrySet()) {
+            finalScore += building.getValue() * building.getKey().getScore();
+        }
+        for (Legion legion : owner.getArmy()) {
+            finalScore += legion.getType().getScore() * legion.getQuantity();
+        }
+        city.setScore(finalScore);
+        cityRepository.save(city);
     }
 }
