@@ -137,7 +137,7 @@ public class CityService {
         customUserRepository.save(owner);
     }
 
-    @Scheduled(cron = "0 5 0 * * ?")
+    @Scheduled(cron = "0 17 0 * * ?")
     // it only works, if the app runs at 0:17!!! alternative: @Scheduled(fixedRate = 60000) // 1 minute interval
     public void vaultDecreaser() {
         List<City> cities = cityRepository.findAll();

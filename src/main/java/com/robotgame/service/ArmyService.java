@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -89,7 +90,9 @@ public class ArmyService {
         City ownCity = cityRepository.findByOwner(owner.getId()).orElse(null);
         City enemyCity = cityRepository.findByOwnerName(enemyName).orElse(null);
 
-        List<Legion> ownArmy = armyRepository.findAllByOwner(owner.getId()); //Sort from Repository side based on attack type
+        List<Legion> ownArmy = armyRepository.findAllByOwner(owner.getId());//Sort from Repository side based on attack type, if it can be done, I couldn't
+        ownArmy.sort(Comparator.comparing(legion -> legion.getType().getAttackType()));
+        System.out.println(ownArmy);
         List<Legion> enemyArmy = armyRepository.findAllByOwnerName(enemyName);
 
         long totalUnitCountEnemy = armyRepository.findUnitQuantity(enemyName) == null ? 0 : armyRepository.findUnitQuantity(enemyName);
@@ -134,7 +137,7 @@ public class ArmyService {
                         singleStructureEnemy = legion1.getType().getStructure();
                         defendingLegion -= 1;
                         enemyScoreLoss += legion2DB.getType().getScore();
-                        enemyCity.setScore(enemyCity.getScore() - legion2DB.getType().getScore());
+//                        enemyCity.setScore(enemyCity.getScore() - legion2DB.getType().getScore());
                     }
                     if (sameDefense2) {
                         singleStructureOwn -= legion1.getType().getAttack() * 0.5 - legion.getType().getArmor();
@@ -145,7 +148,7 @@ public class ArmyService {
                         singleStructureOwn = legion.getType().getStructure();
                         attackingLegion -= 1;
                         ownScoreLoss += legionDB.getType().getScore();
-                        ownCity.setScore(ownCity.getScore() - legionDB.getType().getScore()); // in theory its deletable
+//                        ownCity.setScore(ownCity.getScore() - legionDB.getType().getScore()); // in theory its deletable
                     }
                 }
 

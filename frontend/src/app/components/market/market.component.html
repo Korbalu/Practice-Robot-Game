@@ -1,5 +1,5 @@
 <div class="vaulter">Vault: {{myVault}}</div>
-<div>In case of different Race, the cost is tripled!</div>
+<div>In case of different Race, the buying price is tripled, while selling price not!</div>
 <div class="details">
   <table class="table mb-6">
     <tbody>
@@ -12,7 +12,8 @@
       <td class="table-data">Armor Type</td>
       <td class="table-data">Race</td>
       <td class="table-data">Price</td>
-      <td colspan="3" class="table-data">Add</td>
+      <td class="table-data">Owned</td>
+      <td colspan="3" class="table-data">Buy/Sell</td>
     </tr>
     <tr class="table-bordered" *ngFor="let unit of units">
       <td class="table-data">{{unit.displayName}}</td>
@@ -23,12 +24,15 @@
       <td class="table-data">{{unit.armorType}}</td>
       <td class="table-data">{{unit.raceConnect}}</td>
       <td class="table-data">{{unit.cost}}</td>
+      <td class="table-data">{{getUnitQuantityByLegionName(unit.displayName)}}</td>
       <td style="text-align: center">
-        <button type="button" class="btn-warning" (click)="unitBuyer(1, unit.displayName)">Buy 1</button>
+        <div class="btn-group" role="group" aria-label="Basic mixed styles example">
+          <button type="button" class="btn btn-success" (click)="unitBuyer(1, unit.displayName)">Buy 1</button>
+          <button type="button" class="btn btn-success" (click)="unitBuyer(5, unit.displayName)">Buy 5</button>
+          <button type="button" class="btn btn-danger" (click)="unitSeller(5, unit.displayName)">Sell 5</button>
+          <button type="button" class="btn btn-danger" (click)="unitSeller(1, unit.displayName)">Sell 1</button>
+        </div>
       </td>
-      <td style="text-align: center">
-        <button type="button" class="btn-warning" (click)="unitBuyer(5, unit.displayName)">Buy 5</button>
-      </td >
     </tr>
     </tbody>
   </table>
