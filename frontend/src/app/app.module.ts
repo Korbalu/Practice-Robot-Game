@@ -13,6 +13,7 @@ import { CityComponent } from './components/city/city.component';
 import { BuilderRecruiterComponent } from './components/builder-recruiter/builder-recruiter.component';
 import { CityListComponent } from './components/city-list/city-list.component';
 import { MarketComponent } from './components/market/market.component';
+import { MissionComponent } from './components/mission/mission.component';
 
 @NgModule({
   declarations: [
@@ -24,7 +25,8 @@ import { MarketComponent } from './components/market/market.component';
     CityComponent,
     BuilderRecruiterComponent,
     CityListComponent,
-    MarketComponent
+    MarketComponent,
+    MissionComponent
   ],
   imports: [
     BrowserModule,

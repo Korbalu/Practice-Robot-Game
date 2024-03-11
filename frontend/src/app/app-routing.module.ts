@@ -7,6 +7,7 @@ import {CityComponent} from "./components/city/city.component";
 import {BuilderRecruiterComponent} from "./components/builder-recruiter/builder-recruiter.component";
 import {CityListComponent} from "./components/city-list/city-list.component";
 import {MarketComponent} from "./components/market/market.component";
+import {MissionComponent} from "./components/mission/mission.component";
 
 const routes: Routes = [
   {path:"login", component: LoginComponent},
@@ -15,7 +16,8 @@ const routes: Routes = [
   {path:"city", component: CityComponent},
   {path:"builder-recruiter", component: BuilderRecruiterComponent},
   {path:"city-list", component: CityListComponent},
-  {path:"market", component: MarketComponent}
+  {path:"market", component: MarketComponent},
+  {path:"mission", component: MissionComponent}
 ];
 
 @NgModule({

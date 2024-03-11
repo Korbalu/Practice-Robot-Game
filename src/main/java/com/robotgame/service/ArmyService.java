@@ -92,7 +92,6 @@ public class ArmyService {
 
         List<Legion> ownArmy = armyRepository.findAllByOwner(owner.getId());//Sort from Repository side based on attack type, if it can be done, I couldn't
         ownArmy.sort(Comparator.comparing(legion -> legion.getType().getAttackType()));
-        System.out.println(ownArmy);
         List<Legion> enemyArmy = armyRepository.findAllByOwnerName(enemyName);
 
         long totalUnitCountEnemy = armyRepository.findUnitQuantity(enemyName) == null ? 0 : armyRepository.findUnitQuantity(enemyName);
@@ -137,7 +136,6 @@ public class ArmyService {
                         singleStructureEnemy = legion1.getType().getStructure();
                         defendingLegion -= 1;
                         enemyScoreLoss += legion2DB.getType().getScore();
-//                        enemyCity.setScore(enemyCity.getScore() - legion2DB.getType().getScore());
                     }
                     if (sameDefense2) {
                         singleStructureOwn -= legion1.getType().getAttack() * 0.5 - legion.getType().getArmor();
@@ -148,7 +146,6 @@ public class ArmyService {
                         singleStructureOwn = legion.getType().getStructure();
                         attackingLegion -= 1;
                         ownScoreLoss += legionDB.getType().getScore();
-//                        ownCity.setScore(ownCity.getScore() - legionDB.getType().getScore()); // in theory its deletable
                     }
                 }
 
