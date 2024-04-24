@@ -14,6 +14,7 @@ import {BuilderRecruiterComponent} from './components/builder-recruiter/builder-
 import {CityListComponent} from './components/city-list/city-list.component';
 import {MarketComponent} from './components/market/market.component';
 import {MissionComponent} from './components/mission/mission.component';
+import { MapComponent } from './components/map/map.component';
 
 @NgModule({
   declarations: [
@@ -26,7 +27,8 @@ import {MissionComponent} from './components/mission/mission.component';
     BuilderRecruiterComponent,
     CityListComponent,
     MarketComponent,
-    MissionComponent
+    MissionComponent,
+    MapComponent
   ],
   imports: [
     BrowserModule,

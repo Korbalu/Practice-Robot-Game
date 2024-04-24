@@ -24,6 +24,10 @@ public class City {
     private Long score;
     @Column
     private Long area;
+    @Column
+    private Long x;
+    @Column
+    private Long y;
     @Enumerated(EnumType.STRING)
     private Race race;
     @ElementCollection

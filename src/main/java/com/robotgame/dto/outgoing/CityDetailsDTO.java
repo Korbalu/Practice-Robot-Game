@@ -15,4 +15,6 @@ public class CityDetailsDTO {
     private Long score;
     private Integer turns;
     private String ownerName;
+    private Long x;
+    private Long y;
 }

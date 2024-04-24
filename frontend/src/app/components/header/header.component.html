@@ -27,11 +27,15 @@
         <li *ngIf="localStorage.getItem('token')" class="nav-item">
           <a class="nav-link" routerLink="/mission">Missions</a>
         </li>
+        <li *ngIf="localStorage.getItem('token')" class="nav-item">
+          <a class="nav-link" routerLink="/map">Map</a>
+        </li>
       </ul>
     </div>
     <div class="logouter">
       <button class="user-buttons" *ngIf="localStorage.getItem('token')" (click)="logout()">Logout</button>
-      <button class="user-buttons" *ngIf="localStorage.getItem('token') ==='' || localStorage.getItem('token') === null" (click)="login()">
+      <button class="user-buttons" *ngIf="localStorage.getItem('token') ==='' || localStorage.getItem('token') === null"
+              (click)="login()">
         Login or Register
       </button>
     </div>

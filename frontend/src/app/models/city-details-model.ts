@@ -6,4 +6,6 @@ export interface CityDetailsModel {
   score: number;
   turns: number;
   ownerName: string;
+  x: number;
+  y: number;
 }

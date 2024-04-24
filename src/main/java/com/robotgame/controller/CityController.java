@@ -81,7 +81,7 @@ public class CityController {
     }
 
     @GetMapping("/autoCity")
-    @PreAuthorize("hasRole('ROLE_USER')")
+    @PreAuthorize("hasAnyRole('ROLE_USER', 'ROLE_SUPERUSER')")
     public ResponseEntity<Void> createAutoCity(){
         cityService.autoUserCityCreator();
         return new ResponseEntity<>(HttpStatus.OK);

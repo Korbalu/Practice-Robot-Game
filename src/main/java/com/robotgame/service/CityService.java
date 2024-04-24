@@ -48,6 +48,9 @@ public class CityService {
             default -> null;
         };
         city.setRace(race);
+        int[] coordinates = cityCoordCreater();
+        city.setX((long) coordinates[0]);
+        city.setY((long) coordinates[1]);
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails loggedInUser = (UserDetails) authentication.getPrincipal();
@@ -72,9 +75,10 @@ public class CityService {
             score += legion.getType().getScore() * legion.getQuantity();
         }
         city.setScore(score);
+        System.out.println(city.getName() + "-" + city.getX() + ":" + city.getY());
 
         return new CityDetailsDTO(city.getName(), city.getRace().getDisplayName(), city.getVault(), city.getArea(),
-                city.getScore(), owner.getTurns(), owner.getName());
+                city.getScore(), owner.getTurns(), owner.getName(), city.getX(), city.getY());
     }
 
     public List<RaceNameDTO> raceLister() {
@@ -154,7 +158,7 @@ public class CityService {
         List<Legion> allLightBotLegions = armyRepository.findALLByType(Unit.LightBot);
         for (Legion lightBotLegion : allLightBotLegions) {
             lightBotLegion.setQuantity((long) (lightBotLegion.getQuantity() * 0.8));
-            Legion legion2 = new Legion(Unit.LightBotUpg, (long) (lightBotLegion.getQuantity() * (1- 0.8)), lightBotLegion.getRace(), lightBotLegion.getOwner());
+            Legion legion2 = new Legion(Unit.LightBotUpg, (long) (lightBotLegion.getQuantity() * (1 - 0.8)), lightBotLegion.getRace(), lightBotLegion.getOwner());
             armyRepository.save(lightBotLegion);
             armyRepository.save(legion2);
             System.out.println("armies changed");
@@ -249,5 +253,28 @@ public class CityService {
         }
         city.setScore(finalScore);
         cityRepository.save(city);
+    }
+
+    public int[] cityCoordCreater() {
+        Random random = new Random();
+        int[] coordinates = new int[2];
+
+        List<City> cities = cityRepository.findAllOrderByScore();
+
+        boolean decider;
+
+        do {
+            decider = false;
+            coordinates[0] = random.nextInt(21) + 1;
+            coordinates[1] = random.nextInt(21) + 1;
+            for (City oneCity : cities) {
+                if (oneCity.getX() == coordinates[0] && oneCity.getY() == coordinates[1]) {
+                    decider = true;
+                    break;
+                }
+            }
+        } while (decider);
+
+        return coordinates;
     }
 }
