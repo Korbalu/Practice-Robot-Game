@@ -1,0 +1,16 @@
+.testDiv {
+  width: 100%;
+}
+.active-paths{
+  float: left;
+  width:  50%;
+}
+.logouter{
+  float: right;
+  width:  50%;
+  justify-content: center;
+  padding: 10px;
+}
+.user-buttons{
+  float: right;
+}

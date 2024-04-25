@@ -1,0 +1,9 @@
+<div class="map-container" *ngIf="map">
+  <table>
+    <tr *ngFor="let row of map">
+      <td *ngFor="let cell of row">
+        <img class="map-image" src="{{getImage(cell)}}" alt="Pic">
+      </td>
+    </tr>
+  </table>
+</div>

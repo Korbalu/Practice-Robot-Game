@@ -1,0 +1,16 @@
+.vaulter{
+  padding: 10px;
+  margin: 10px;
+}
+.details {
+  flex-direction: column;
+  padding: 10px;
+  margin: 10px;
+  display: flex;
+  flex: fit-content;
+}
+.table-data{
+  text-align: center;
+  vertical-align: middle;
+}
+
