@@ -210,6 +210,9 @@ public class CityService {
         };
 
         City city = new City("AutoCity" + counterEntity.getId(), race, autoUser);
+        int[] coordinates = cityCoordCreater();
+        city.setX((long) coordinates[0]);
+        city.setY((long) coordinates[1]);
         cityRepository.save(city);
 
         Building[] buildings = Building.values();

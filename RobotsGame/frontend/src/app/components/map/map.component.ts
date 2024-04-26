@@ -1,4 +1,4 @@
-import {Component} from '@angular/core';
+import {Component} from "@angular/core";
 import {CityService} from "../../services/city.service";
 import {CityListModel} from "../../models/city-list-model";
 
