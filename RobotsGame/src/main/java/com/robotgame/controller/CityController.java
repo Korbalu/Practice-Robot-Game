@@ -67,6 +67,12 @@ public class CityController {
         cityService.newTurn();
         return new ResponseEntity<>(HttpStatus.OK);
     }
+    @GetMapping("/newTurnBots")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<Void> botsTakeTurns(){
+        cityService.newTurn4Bots();
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
     @GetMapping("/allCities")
     @PreAuthorize("hasRole('ROLE_USER')")

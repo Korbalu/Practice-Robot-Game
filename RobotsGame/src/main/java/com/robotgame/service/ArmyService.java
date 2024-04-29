@@ -13,10 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class ArmyService {
@@ -195,5 +192,52 @@ public class ArmyService {
         }
         city.setScore(finalScore);
         cityRepository.save(city);
+    }
+
+    public void randomUnitIncreaser(City city, CustomUser owner) {
+        Race race = city.getRace();
+        Unit specialUnit = Unit.LightBot;
+        Random random = new Random();
+        int randomNumber = random.nextInt(100) + 1;
+        for (Unit unit : Unit.values()) {
+            if (unit.getRaceConnect().equals(race.getDisplayName())) {
+                specialUnit = unit;
+            }
+        }
+
+        if (randomNumber < 61) {
+            Legion legion = armyRepository.findByOwnerAndType(owner.getId(), specialUnit);
+            if (city.getVault() > specialUnit.getCost()) {
+                unitAdder(city, owner, specialUnit, legion);
+            }
+        } else if (randomNumber < 81) {
+            Legion legion = armyRepository.findByOwnerAndType(owner.getId(), Unit.LightBot);
+            if (city.getVault() > Unit.LightBot.getCost()) {
+                unitAdder(city, owner, Unit.LightBot, legion);
+            }
+        } else if (randomNumber < 91) {
+            Legion legion = armyRepository.findByOwnerAndType(owner.getId(), Unit.Bomber);
+            if (city.getVault() > Unit.Bomber.getCost()) {
+                unitAdder(city, owner, Unit.Bomber, legion);
+            }
+        } else {
+            Legion legion = armyRepository.findByOwnerAndType(owner.getId(), Unit.HeavyHitter);
+            if (city.getVault() > Unit.HeavyHitter.getCost()) {
+                unitAdder(city, owner, Unit.HeavyHitter, legion);
+            }
+        }
+
+    }
+
+    public void unitAdder(City city, CustomUser owner, Unit specialUnit, Legion legion) {
+        if (legion == null) {
+            Legion legion2 = new Legion(specialUnit, 1L, city.getRace(), owner);
+            city.setVault(city.getVault() - specialUnit.getCost());
+            armyRepository.save(legion2);
+        } else {
+            city.setVault(city.getVault() - specialUnit.getCost());
+            legion.setQuantity(legion.getQuantity() + 1L);
+            armyRepository.save(legion);
+        }
     }
 }

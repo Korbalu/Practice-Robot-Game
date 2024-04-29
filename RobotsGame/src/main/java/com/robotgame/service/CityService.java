@@ -280,4 +280,60 @@ public class CityService {
 
         return coordinates;
     }
+
+    public void newTurn4Bots() {
+        List<City> cities = cityRepository.findAllAutoCity();
+
+        for (City city : cities) {
+            while (city.getOwner().getTurns() > 0) {
+                manufacturePriorityForBots(city);
+                for (Map.Entry<Building, Long> building : city.getBuildings().entrySet()) {
+                    if (building.getKey().equals(Building.CRYSTALMINE)) {
+                        city.setVault(city.getVault() + building.getKey().getProduction() * building.getValue());
+                    }
+                    if (building.getKey().equals(Building.FACTORY)) {
+                        armyService.factoryIncrease(city, city.getOwner(), Unit.LightBot.getDisplayName(), building.getKey().getProduction() * building.getValue());
+                    }
+                }
+                city.getOwner().setTurns(city.getOwner().getTurns() - 1);
+                cityRepository.save(city);
+                customUserRepository.save(city.getOwner());
+            }
+            scorer(city, city.getOwner());
+        }
+    }
+
+    private void manufacturePriorityForBots(City city) {
+        CustomUser owner = city.getOwner();
+        if (city.getArea() > 0 && city.getVault() > 100) {
+            if (owner.getTurns() > 100) {
+                for (Building building : Building.values()) {
+                    if ((building.equals(Building.CRYSTALMINE) || building.equals(Building.FACTORY))
+                            && (!city.getBuildings().containsKey(building) || city.getBuildings().get(building) < 7)) {
+                        city.getBuildings().computeIfPresent(building, (k, v) -> v + 1);
+                        city.getBuildings().computeIfAbsent(building, k -> 1L);
+                        city.setVault(city.getVault() - building.getCost());
+                        city.setArea(city.getArea() - 1);
+                        buildingScorer(building.getDisplayName(), city);
+                    }
+                }
+            }
+        }
+        boolean hasLightBot = owner.getArmy().stream().anyMatch(legion -> legion.getType() == Unit.LightBot);
+        if (city.getArea() == 0) {
+            Legion legion = armyRepository.findByOwnerAndType(owner.getId(), Unit.LightBot);
+            if (hasLightBot) {
+                city.setArea(city.getArea() + 1);
+                legion.setQuantity(legion.getQuantity() - 1);
+                armyRepository.save(legion);
+                armyRepository.deleteAllByQuantity(0L);
+            } else {
+                armyService.unitAdder(city, owner, Unit.LightBot, legion);
+            }
+        }
+        if (city.getVault() > 200) {
+            armyService.randomUnitIncreaser(city, owner);
+        }
+        cityRepository.save(city);
+    }
 }

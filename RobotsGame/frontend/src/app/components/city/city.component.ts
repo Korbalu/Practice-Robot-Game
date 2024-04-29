@@ -65,4 +65,17 @@ export class CityComponent {
       }
     })
   }
+
+  newTurnForBots(){
+    this.cityService.takeNewTurnBots().subscribe({
+      next: () => {
+      },
+      error: err => {
+        console.log(err)
+      },
+      complete: () => {
+        console.log("Bots used their turns");
+      }
+    })
+  }
 }
