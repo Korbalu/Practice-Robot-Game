@@ -1,0 +1,16 @@
+<div>
+  <table class="table mb-6">
+    <tbody>
+    <tr class="table-light">
+      <td>Type</td>
+      <td>Log</td>
+      <td>Creation</td>
+    </tr>
+    <tr class="table-bordered" *ngFor="let log of logs">
+      <td>{{log.headers}}</td>
+      <td>{{log.log}}</td>
+      <td>{{log.createdAt | date: 'yyyy-MM-dd HH:mm'}}</td>
+    </tr>
+    </tbody>
+  </table>
+</div>

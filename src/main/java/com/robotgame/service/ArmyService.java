@@ -6,6 +6,7 @@ import com.robotgame.dto.outgoing.UnitListDTO;
 import com.robotgame.repository.ArmyRepository;
 import com.robotgame.repository.CityRepository;
 import com.robotgame.repository.CustomUserRepository;
+import com.robotgame.repository.LogRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
@@ -24,12 +25,14 @@ public class ArmyService {
     private ArmyRepository armyRepository;
     private CustomUserRepository customUserRepository;
     private CityRepository cityRepository;
+    private LogRepository logRepository;
     private static final Logger logger = LoggerFactory.getLogger(ArmyService.class);
 
-    public ArmyService(ArmyRepository armyRepository, CustomUserRepository customUserRepository, CityRepository cityRepository) {
+    public ArmyService(ArmyRepository armyRepository, CustomUserRepository customUserRepository, CityRepository cityRepository, LogRepository logRepository) {
         this.armyRepository = armyRepository;
         this.customUserRepository = customUserRepository;
         this.cityRepository = cityRepository;
+        this.logRepository = logRepository;
     }
 
     public void increaseUnit(String unit, Long quantity) {
@@ -90,7 +93,7 @@ public class ArmyService {
         City ownCity = cityRepository.findByOwner(owner.getId()).orElse(null);
         City enemyCity = cityRepository.findByOwnerName(enemyName).orElse(null);
 
-        List<Legion> ownArmy = armyRepository.findAllByOwner(owner.getId());//Sort from Repository side based on attack type, if it can be done, I couldn't
+        List<Legion> ownArmy = armyRepository.findAllByOwner(owner.getId()); //Sort from Repository side based on attack type, if it can be done, I couldn't
         ownArmy.sort(Comparator.comparing(legion -> legion.getType().getAttackType()));
         List<Legion> enemyArmy = armyRepository.findAllByOwnerName(enemyName);
 
@@ -98,6 +101,11 @@ public class ArmyService {
 
         long ownScoreLoss = 0;
         long enemyScoreLoss = 0;
+
+        StringBuilder logBodyAttacker = new StringBuilder();
+        StringBuilder logBodyDefender = new StringBuilder();
+        logBodyAttacker.append("Attacker: " + owner.getName() + " Defender: " + enemyName);
+        logBodyDefender.append("Attacker: " + owner.getName() + " Defender: " + enemyName);
 
         for (Legion legion : ownArmy) {
             for (Legion legion1 : enemyArmy) {
@@ -108,6 +116,7 @@ public class ArmyService {
                 boolean sameDefense2 = legion1.getType().getAttackType().equals(legion.getType().getArmorType());
 
                 long totalLegionAttack = legion.getQuantity() * legion.getType().getAttack();
+                logBodyAttacker.append("\n Attack Strength: " + totalLegionAttack);
                 long partialLegionAttack;
 
                 if (sameDefense) {
@@ -136,6 +145,7 @@ public class ArmyService {
                         singleStructureEnemy = legion1.getType().getStructure();
                         defendingLegion -= 1;
                         enemyScoreLoss += legion2DB.getType().getScore();
+                        logBodyDefender.append("\n Unit lost: " + legion1.getType().getDisplayName());
                     }
                     if (sameDefense2) {
                         singleStructureOwn -= legion1.getType().getAttack() * 0.5 - legion.getType().getArmor();
@@ -146,6 +156,7 @@ public class ArmyService {
                         singleStructureOwn = legion.getType().getStructure();
                         attackingLegion -= 1;
                         ownScoreLoss += legionDB.getType().getScore();
+                        logBodyAttacker.append("\n Unit lost: " + legion.getType().getDisplayName());
                     }
                 }
 
@@ -163,14 +174,27 @@ public class ArmyService {
                 long areaGain = Math.max(Math.round(enemyCity.getArea() * 0.05), 1);
                 enemyCity.setArea(enemyCity.getArea() - areaGain);
                 ownCity.setArea(ownCity.getArea() + areaGain);
+                logBodyAttacker.append("\n Victory! Area taken: " + areaGain);
+                logBodyDefender.append("\n Defeat! Area taken: " + areaGain);
             } else if (attackType.equals("raid")) {
                 long wealthGain = Math.round(enemyCity.getVault() * 0.1);
                 enemyCity.setVault(enemyCity.getVault() - wealthGain);
                 ownCity.setVault(ownCity.getVault() + wealthGain);
+                logBodyAttacker.append("\n Victory! Vault increase: " + wealthGain);
+                logBodyDefender.append("\n Defeat! Vault increase: " + wealthGain);
             }
+        } else {
+            logBodyAttacker.append("\n Defeat!");
+            logBodyDefender.append("\n Victory!");
         }
+        Log attackerLog = new Log("Battle", new String(logBodyAttacker), owner);
+        Log defenderLog = new Log("Battle", new String(logBodyDefender), enemyCity.getOwner());
+        logRepository.save(attackerLog);
+        logRepository.save(defenderLog);
+
         armyRepository.deleteAllByQuantity(0L);
         scorer(ownCity, owner);
+        scorer(enemyCity, enemyCity.getOwner());
     }
 
     public void factoryIncrease(City city, CustomUser owner, String unit, Long quantity) {

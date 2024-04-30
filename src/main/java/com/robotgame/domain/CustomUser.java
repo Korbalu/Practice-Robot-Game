@@ -37,7 +37,8 @@ public class CustomUser implements UserDetails {
     private LocalDateTime createdAt;
     @OneToMany(mappedBy = "owner")
     private List<Legion> army;
-
+    @OneToMany(mappedBy = "owner")
+    private List<Log> logs;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

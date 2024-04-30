@@ -9,8 +9,11 @@ import {CityListComponent} from "./components/city-list/city-list.component";
 import {MarketComponent} from "./components/market/market.component";
 import {MissionComponent} from "./components/mission/mission.component";
 import {MapComponent} from "./components/map/map.component";
+import {LogComponent} from "./components/log/log.component";
+import {HomeComponent} from "./components/home/home.component";
 
 const routes: Routes = [
+  {path:"", component: HomeComponent},
   {path:"login", component: LoginComponent},
   {path:"user-details", component: UserDetailsComponent},
   {path:"city-creation", component: CityCreationComponent},
@@ -19,7 +22,8 @@ const routes: Routes = [
   {path:"city-list", component: CityListComponent},
   {path:"market", component: MarketComponent},
   {path:"mission", component: MissionComponent},
-  {path:"map", component: MapComponent}
+  {path:"map", component: MapComponent},
+  {path:"log", component: LogComponent}
 ];
 
 @NgModule({
