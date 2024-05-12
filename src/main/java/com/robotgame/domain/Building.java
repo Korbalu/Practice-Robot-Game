@@ -18,5 +18,6 @@ public enum Building {
         this.production = production;
         this.cost = cost;
         this.score = score;
+
     }
 }
