@@ -126,12 +126,23 @@ public class CityService {
 
         City city = cityRepository.findByOwner(owner.getId()).orElse(null);
 
+        Unit specialUnit = Arrays.stream(Unit.values()).
+                filter(unit -> unit.getRaceConnect().equals(city.getRace().getDisplayName()))
+                .toArray(Unit[]::new)[0];
+
         for (Map.Entry<Building, Long> building : city.getBuildings().entrySet()) {
             if (building.getKey().equals(Building.CRYSTALMINE)) {
                 city.setVault(city.getVault() + building.getKey().getProduction() * building.getValue());
             }
+            if (building.getKey().equals(Building.MANUFACTUREPLANT)) {
+                city.setVault(city.getVault() + building.getKey().getProduction() * building.getValue());
+                armyService.factoryIncrease(city, owner, Unit.LightBot.getDisplayName(), building.getKey().getProduction() * building.getValue());
+            }
             if (building.getKey().equals(Building.FACTORY)) {
                 armyService.factoryIncrease(city, owner, Unit.LightBot.getDisplayName(), building.getKey().getProduction() * building.getValue());
+            }
+            if (building.getKey().equals(Building.SPECIALIZER)) {
+                armyService.factoryIncrease(city, owner, specialUnit.getDisplayName(), building.getKey().getProduction() * building.getValue());
             }
         }
         armyService.scorer(city, owner);
