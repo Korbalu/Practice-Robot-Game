@@ -87,7 +87,7 @@ public class ArmyService {
         City ownCity = cityRepository.findByOwner(owner.getId()).orElse(null);
         City enemyCity = cityRepository.findByOwnerName(enemyName).orElse(null);
 
-        List<Legion> ownArmy = armyRepository.findAllByOwner(owner.getId());//Sort from Repository side based on attack type, if it can be done, I couldn't
+        List<Legion> ownArmy = armyRepository.findAllByOwner(owner.getId());//Sort from Repository side based on attack type, if it can be done... I couldn't
         ownArmy.sort(Comparator.comparing(legion -> legion.getType().getAttackType()));
         List<Legion> enemyArmy = armyRepository.findAllByOwnerName(enemyName);
 
@@ -108,9 +108,9 @@ public class ArmyService {
                 long partialLegionAttack;
 
                 if (sameDefense) {
-                    partialLegionAttack = Math.round(totalLegionAttack * (legion1.getQuantity() / totalUnitCountEnemy) * 0.5);
+                    partialLegionAttack = Math.round(totalLegionAttack * ((double) legion1.getQuantity() / totalUnitCountEnemy) * 0.5);
                 } else {
-                    partialLegionAttack = Math.round(totalLegionAttack * (legion1.getQuantity() / totalUnitCountEnemy));
+                    partialLegionAttack = Math.round(totalLegionAttack * ((double) legion1.getQuantity() / totalUnitCountEnemy));
                 }
 
                 int singleStructureEnemy = legion1.getType().getStructure();
@@ -122,7 +122,10 @@ public class ArmyService {
                     partialLegionAttack -= legion.getType().getAttack();
                     int defendersArmor = legion1.getType().getArmor();
                     if (enemyCity.getBuildings().containsKey(Building.WALL)) {
-                        defendersArmor *= 1.01 * enemyCity.getBuildings().get(Building.WALL);
+                        defendersArmor *= Math.min(1 + (Building.WALL.getProduction() / 100.0) * enemyCity.getBuildings().get(Building.WALL), 1.3);
+                    }
+                    if (enemyCity.getBuildings().containsKey(Building.LIGHTREPELLER) && legion.getType().equals(Unit.LightBot)) {
+                        defendersArmor *= Math.min(1 + (Building.LIGHTREPELLER.getProduction() / 100.0) * enemyCity.getBuildings().get(Building.LIGHTREPELLER), 1.2);
                     }
                     if (sameDefense) {
                         singleStructureEnemy -= Math.max(legion.getType().getAttack() * 0.5 - defendersArmor, 1);
@@ -226,18 +229,19 @@ public class ArmyService {
                 unitAdder(city, owner, Unit.HeavyHitter, legion);
             }
         }
-
     }
 
     public void unitAdder(City city, CustomUser owner, Unit specialUnit, Legion legion) {
-        if (legion == null) {
-            Legion legion2 = new Legion(specialUnit, 1L, city.getRace(), owner);
-            city.setVault(city.getVault() - specialUnit.getCost());
-            armyRepository.save(legion2);
-        } else {
-            city.setVault(city.getVault() - specialUnit.getCost());
-            legion.setQuantity(legion.getQuantity() + 1L);
-            armyRepository.save(legion);
+        if (city.getVault() >= specialUnit.getCost()) {
+            if (legion == null) {
+                Legion legion2 = new Legion(specialUnit, 1L, city.getRace(), owner);
+                city.setVault(city.getVault() - specialUnit.getCost());
+                armyRepository.save(legion2);
+            } else {
+                city.setVault(city.getVault() - specialUnit.getCost());
+                legion.setQuantity(legion.getQuantity() + 1L);
+                armyRepository.save(legion);
+            }
         }
     }
 }

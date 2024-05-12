@@ -24,6 +24,7 @@ public class City {
     private Long score;
     @Column
     private Long area;
+    private Long freeArea;
     @Column
     private Long x;
     @Column
@@ -41,6 +42,7 @@ public class City {
         this.vault = 1000L;
         this.score = 0L;
         this.area = 50L;
+        this.freeArea = this.area;
         this.buildings = new HashMap<>();
     }
 
@@ -50,6 +52,7 @@ public class City {
         this.score = 0L;
         this.race = race;
         this.area = 50L;
+        this.freeArea = this.area;
         this.owner = owner;
         this.buildings = new HashMap<>();
     }

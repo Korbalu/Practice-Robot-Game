@@ -75,10 +75,9 @@ public class CityService {
             score += legion.getType().getScore() * legion.getQuantity();
         }
         city.setScore(score);
-        System.out.println(city.getName() + "-" + city.getX() + ":" + city.getY());
 
         return new CityDetailsDTO(city.getName(), city.getRace().getDisplayName(), city.getVault(), city.getArea(),
-                city.getScore(), owner.getTurns(), owner.getName(), city.getX(), city.getY());
+                city.getFreeArea(), city.getScore(), owner.getTurns(), owner.getName(), city.getX(), city.getY());
     }
 
     public List<RaceNameDTO> raceLister() {
@@ -92,11 +91,11 @@ public class CityService {
 
         City city = cityRepository.findByOwner(owner.getId()).orElse(null);
 
-        if (city.getVault() >= Building.valueOf(building.toUpperCase()).getCost() && city.getArea() > 0) {
+        if (city.getVault() >= Building.valueOf(building.toUpperCase()).getCost() && city.getFreeArea() > 0) {
             city.getBuildings().computeIfPresent(Building.valueOf(building.toUpperCase()), (k, v) -> v + 1);
             city.getBuildings().putIfAbsent(Building.valueOf(building.toUpperCase()), 1L);
             city.setVault(city.getVault() - Building.valueOf(building.toUpperCase()).getCost());
-            city.setArea(city.getArea() - 1);
+            city.setFreeArea(city.getFreeArea() - 1);
             buildingScorer(building, city);
         }
         armyService.scorer(city, owner);
@@ -216,17 +215,20 @@ public class CityService {
         cityRepository.save(city);
 
         Building[] buildings = Building.values();
-        Unit[] units = Unit.values();
+        Unit[] units = Arrays.stream(Unit.values()).
+                filter(unit -> unit != Unit.LightBotUpg &&
+                        (unit.getRaceConnect().equals(race.getDisplayName()) || unit.getRaceConnect().equals("None")))
+                .toArray(Unit[]::new);
 
         while (city.getVault() > 100) {
             int decider = random.nextInt(100);
-            if (decider < 20) {
+            if (decider < 20 && city.getFreeArea() > 0) {
                 int buildingIndex = random.nextInt(buildings.length);
                 String randomBuilding = buildings[buildingIndex].getDisplayName();
                 city.getBuildings().computeIfPresent(Building.valueOf(randomBuilding.toUpperCase()), (k, v) -> v + 1);
                 city.getBuildings().putIfAbsent(Building.valueOf(randomBuilding.toUpperCase()), 1L);
                 city.setVault(city.getVault() - Building.valueOf(randomBuilding.toUpperCase()).getCost());
-                city.setArea(city.getArea() - 1);
+                city.setFreeArea(city.getFreeArea() - 1);
             } else {
                 int unitIndex = random.nextInt(units.length);
                 String randomUnit = units[unitIndex].getDisplayName();
@@ -292,7 +294,8 @@ public class CityService {
                         city.setVault(city.getVault() + building.getKey().getProduction() * building.getValue());
                     }
                     if (building.getKey().equals(Building.FACTORY)) {
-                        armyService.factoryIncrease(city, city.getOwner(), Unit.LightBot.getDisplayName(), building.getKey().getProduction() * building.getValue());
+                        armyService.factoryIncrease(city, city.getOwner(), Unit.LightBot.getDisplayName(),
+                                building.getKey().getProduction() * building.getValue());
                     }
                 }
                 city.getOwner().setTurns(city.getOwner().getTurns() - 1);
@@ -305,25 +308,26 @@ public class CityService {
 
     private void manufacturePriorityForBots(City city) {
         CustomUser owner = city.getOwner();
-        if (city.getArea() > 0 && city.getVault() > 100) {
-            if (owner.getTurns() > 100) {
+        if (city.getFreeArea() > 0 && city.getVault() > 100) {
+            if (owner.getTurns() > 20) {
                 for (Building building : Building.values()) {
                     if ((building.equals(Building.CRYSTALMINE) || building.equals(Building.FACTORY))
                             && (!city.getBuildings().containsKey(building) || city.getBuildings().get(building) < 7)) {
                         city.getBuildings().computeIfPresent(building, (k, v) -> v + 1);
                         city.getBuildings().computeIfAbsent(building, k -> 1L);
                         city.setVault(city.getVault() - building.getCost());
-                        city.setArea(city.getArea() - 1);
+                        city.setFreeArea(city.getFreeArea() - 1);
                         buildingScorer(building.getDisplayName(), city);
                     }
                 }
             }
         }
         boolean hasLightBot = owner.getArmy().stream().anyMatch(legion -> legion.getType() == Unit.LightBot);
-        if (city.getArea() == 0) {
+        if (city.getFreeArea() == 0) {
             Legion legion = armyRepository.findByOwnerAndType(owner.getId(), Unit.LightBot);
             if (hasLightBot) {
                 city.setArea(city.getArea() + 1);
+                city.setFreeArea(city.getFreeArea() + 1);
                 legion.setQuantity(legion.getQuantity() - 1);
                 armyRepository.save(legion);
                 armyRepository.deleteAllByQuantity(0L);
