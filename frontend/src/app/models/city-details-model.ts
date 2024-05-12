@@ -3,6 +3,7 @@ export interface CityDetailsModel {
   race: string;
   vault: number;
   area: number;
+  freeArea: number;
   score: number;
   turns: number;
   ownerName: string;

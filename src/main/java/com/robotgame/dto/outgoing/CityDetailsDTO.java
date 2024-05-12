@@ -12,6 +12,7 @@ public class CityDetailsDTO {
     private String race;
     private Long vault;
     private Long area;
+    private Long freeArea;
     private Long score;
     private Integer turns;
     private String ownerName;
