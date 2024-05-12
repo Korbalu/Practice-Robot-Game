@@ -5,6 +5,7 @@ import {RegisterRequestModel} from "../models/register-request-model";
 import {LoginRequestModel} from "../models/login-request-model";
 import {UserListModel} from "../models/user-list-model";
 import {RoleSenderModel} from "../models/role-sender-model";
+import {LogListModel} from "../models/log-list-model";
 
 const BASE_URL = "http://localhost:8080/api";
 
@@ -41,5 +42,10 @@ export class UserService {
     this.token = localStorage.getItem("token");
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
     return this.http.get<RoleSenderModel>(BASE_URL + "/userrole", {headers})
+  }
+  loglister():Observable<any>{
+    this.token = localStorage.getItem("token");
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
+    return this.http.get<Array<LogListModel>>(BASE_URL + "/logs", {headers})
   }
 }
