@@ -77,7 +77,7 @@ public class CityService {
         city.setScore(score);
 
         return new CityDetailsDTO(city.getName(), city.getRace().getDisplayName(), city.getVault(), city.getArea(),
-                city.getFreeArea(), city.getScore(), owner.getTurns(), owner.getName(), city.getX(), city.getY());
+                city.getFreeArea(), city.getScore(), owner.getTurns(), owner.getName(), owner.getResourcesSent(), city.getX(), city.getY());
     }
 
     public List<RaceNameDTO> raceLister() {
@@ -202,6 +202,7 @@ public class CityService {
         autoUser.setEmail("AutoEmail" + counterEntity.getId());
         autoUser.setPassword(passwordEncoder.encode("pass" + counterEntity.getId()));
         autoUser.setTurns(50);
+        autoUser.setResourcesSent(0L);
         autoUser.setRole(UserRole.ROLE_USER);
         autoUser.setCreatedAt(LocalDateTime.now());
         autoUser.setLastTimeTurnGiven(LocalDateTime.now());
@@ -281,8 +282,8 @@ public class CityService {
 
         do {
             decider = false;
-            coordinates[0] = random.nextInt(21) + 1;
-            coordinates[1] = random.nextInt(21) + 1;
+            coordinates[0] = random.nextInt(20) + 1;
+            coordinates[1] = random.nextInt(20) + 1;
             for (City oneCity : cities) {
                 if (oneCity.getX() == coordinates[0] && oneCity.getY() == coordinates[1]) {
                     decider = true;

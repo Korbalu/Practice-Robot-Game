@@ -28,6 +28,7 @@ public class CustomUser implements UserDetails {
     @Column
     private String password;
     private Integer turns;
+    private Long resourcesSent;
     @Column
     private LocalDateTime lastTimeTurnGiven;
     @Enumerated(EnumType.STRING)

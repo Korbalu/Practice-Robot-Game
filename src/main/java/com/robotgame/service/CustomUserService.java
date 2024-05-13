@@ -46,6 +46,7 @@ public class CustomUserService {
         cUser.setEmail(request.getEmail());
         cUser.setPassword(passwordEncoder.encode(request.getPassword()));
         cUser.setTurns(50);
+        cUser.setResourcesSent(0L);
         cUser.setRole(UserRole.ROLE_USER);
         cUser.setCreatedAt(LocalDateTime.now());
         cUser.setLastTimeTurnGiven(cUser.getCreatedAt());

@@ -6,6 +6,7 @@ export interface CityDetailsModel {
   freeArea: number;
   score: number;
   turns: number;
+  resSent: number;
   ownerName: string;
   x: number;
   y: number;
