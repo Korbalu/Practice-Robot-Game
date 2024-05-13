@@ -63,7 +63,11 @@ export class CityService {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
     return this.http.get(BASE_URL + "/newTurn", {headers});
   }
-
+  takeNewTurnBots():Observable<any>{
+    this.token = localStorage.getItem("token");
+    const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
+    return this.http.get(BASE_URL + "/newTurnBots", {headers});
+  }
   cityLister():Observable<any>{
     this.token = localStorage.getItem("token");
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);

@@ -48,7 +48,8 @@ public class MissionService {
     }
 
     public void completeExpedition (City city, Long quantity){
-        city.setArea(city.getArea() + Math.round(quantity / 3));
+        city.setArea(city.getArea() + Math.round(quantity / 3.0));
+        city.setFreeArea(city.getFreeArea() + Math.round(quantity / 3.0));
         cityRepository.save(city);
     }
 }

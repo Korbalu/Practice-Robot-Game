@@ -11,7 +11,7 @@ import {LegionListModel} from "../../models/legion-list-model";
   styleUrls: ['./city.component.css']
 })
 export class CityComponent {
-  city: CityDetailsModel = {name: "", race: "", vault: 0, area: 0, score: 0, turns: 0, ownerName: "", x:0, y:0}
+  city: CityDetailsModel = {name: "", race: "", vault: 0, area: 0, freeArea: 0, score: 0, turns: 0, ownerName: "", x:0, y:0}
   buildings: Array<BuildingListModel> = [];
   army: Array<LegionListModel> = [];
 
@@ -65,4 +65,17 @@ export class CityComponent {
       }
     })
   }
+  newTurnForBots(){
+    this.cityService.takeNewTurnBots().subscribe({
+      next: () => {
+      },
+      error: err => {
+        console.log(err)
+      },
+      complete: () => {
+        console.log("Bots used their turns");
+      }
+    })
+  }
+
 }

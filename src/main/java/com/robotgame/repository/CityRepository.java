@@ -21,4 +21,7 @@ public interface CityRepository extends JpaRepository<City, Long> {
     @Query("select c from City c order by c.score desc")
     List<City> findAllOrderByScore();
 
+    @Query("select c from City c where c.name like 'AutoCity%'")
+    List<City> findAllAutoCity();
+
 }

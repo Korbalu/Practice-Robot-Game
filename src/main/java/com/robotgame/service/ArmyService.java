@@ -14,10 +14,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class ArmyService {
@@ -121,9 +118,9 @@ public class ArmyService {
                 long partialLegionAttack;
 
                 if (sameDefense) {
-                    partialLegionAttack = Math.round(totalLegionAttack * (legion1.getQuantity() / totalUnitCountEnemy) * 0.5);
+                    partialLegionAttack = Math.round(totalLegionAttack * ((double) legion1.getQuantity() / totalUnitCountEnemy) * 0.5);
                 } else {
-                    partialLegionAttack = Math.round(totalLegionAttack * (legion1.getQuantity() / totalUnitCountEnemy));
+                    partialLegionAttack = Math.round(totalLegionAttack * ((double) legion1.getQuantity() / totalUnitCountEnemy));
                 }
 
                 int singleStructureEnemy = legion1.getType().getStructure();
@@ -135,7 +132,10 @@ public class ArmyService {
                     partialLegionAttack -= legion.getType().getAttack();
                     int defendersArmor = legion1.getType().getArmor();
                     if (enemyCity.getBuildings().containsKey(Building.WALL)) {
-                        defendersArmor *= 1.01 * enemyCity.getBuildings().get(Building.WALL);
+                        defendersArmor *= Math.min(1 + (Building.WALL.getProduction() / 100.0) * enemyCity.getBuildings().get(Building.WALL), 1.3);
+                    }
+                    if (enemyCity.getBuildings().containsKey(Building.LIGHTREPELLER) && legion.getType().equals(Unit.LightBot)) {
+                        defendersArmor *= Math.min(1 + (Building.LIGHTREPELLER.getProduction() / 100.0) * enemyCity.getBuildings().get(Building.LIGHTREPELLER), 1.2);
                     }
                     if (sameDefense) {
                         singleStructureEnemy -= Math.max(legion.getType().getAttack() * 0.5 - defendersArmor, 1);
@@ -220,5 +220,53 @@ public class ArmyService {
         }
         city.setScore(finalScore);
         cityRepository.save(city);
+    }
+
+    public void randomUnitIncreaser(City city, CustomUser owner) {
+        Race race = city.getRace();
+        Unit specialUnit = Unit.LightBot;
+        Random random = new Random();
+        int randomNumber = random.nextInt(100) + 1;
+        for (Unit unit : Unit.values()) {
+            if (unit.getRaceConnect().equals(race.getDisplayName())) {
+                specialUnit = unit;
+            }
+        }
+
+        if (randomNumber < 61) {
+            Legion legion = armyRepository.findByOwnerAndType(owner.getId(), specialUnit);
+            if (city.getVault() > specialUnit.getCost()) {
+                unitAdder(city, owner, specialUnit, legion);
+            }
+        } else if (randomNumber < 81) {
+            Legion legion = armyRepository.findByOwnerAndType(owner.getId(), Unit.LightBot);
+            if (city.getVault() > Unit.LightBot.getCost()) {
+                unitAdder(city, owner, Unit.LightBot, legion);
+            }
+        } else if (randomNumber < 91) {
+            Legion legion = armyRepository.findByOwnerAndType(owner.getId(), Unit.Bomber);
+            if (city.getVault() > Unit.Bomber.getCost()) {
+                unitAdder(city, owner, Unit.Bomber, legion);
+            }
+        } else {
+            Legion legion = armyRepository.findByOwnerAndType(owner.getId(), Unit.HeavyHitter);
+            if (city.getVault() > Unit.HeavyHitter.getCost()) {
+                unitAdder(city, owner, Unit.HeavyHitter, legion);
+            }
+        }
+    }
+
+    public void unitAdder(City city, CustomUser owner, Unit specialUnit, Legion legion) {
+        if (city.getVault() >= specialUnit.getCost()) {
+            if (legion == null) {
+                Legion legion2 = new Legion(specialUnit, 1L, city.getRace(), owner);
+                city.setVault(city.getVault() - specialUnit.getCost());
+                armyRepository.save(legion2);
+            } else {
+                city.setVault(city.getVault() - specialUnit.getCost());
+                legion.setQuantity(legion.getQuantity() + 1L);
+                armyRepository.save(legion);
+            }
+        }
     }
 }

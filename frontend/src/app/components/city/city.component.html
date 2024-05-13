@@ -6,7 +6,7 @@
     <tr class="table-light">
       <td>Race</td>
       <td>Vault</td>
-      <td>Area</td>
+      <td>Free Area / Area</td>
       <td>Owner</td>
       <td>Turns</td>
       <td>Score</td>
@@ -14,7 +14,7 @@
     <tr class="table-bordered">
       <td>{{city.race}}</td>
       <td>{{city.vault}}</td>
-      <td>{{city.area}}</td>
+      <td>{{city.freeArea}} / {{city.area}}</td>
       <td>{{city.ownerName}}</td>
       <td>{{city.turns}}</td>
       <td>{{city.score}}</td>
@@ -56,5 +56,6 @@
 </div>
 <div style="text-align: center">
   <button class="btn-warning" (click)="newTurn()">New Turn</button>
+  <button class="btn-warning" (click)="newTurnForBots()">New Turn For Bots</button>
 </div>
 
