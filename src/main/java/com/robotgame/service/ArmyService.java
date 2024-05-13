@@ -107,6 +107,7 @@ public class ArmyService {
         logBodyAttacker.append("Attacker: " + owner.getName() + " Defender: " + enemyName);
         logBodyDefender.append("Attacker: " + owner.getName() + " Defender: " + enemyName);
 
+
         for (Legion legion : ownArmy) {
             for (Legion legion1 : enemyArmy) {
                 Legion legionDB = armyRepository.findByOwnerAndType(owner.getId(), legion.getType());
