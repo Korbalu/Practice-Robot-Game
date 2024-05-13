@@ -14,9 +14,9 @@ import {BuilderRecruiterComponent} from './components/builder-recruiter/builder-
 import {CityListComponent} from './components/city-list/city-list.component';
 import {MarketComponent} from './components/market/market.component';
 import {MissionComponent} from './components/mission/mission.component';
-import { MapComponent } from './components/map/map.component';
-import { LogComponent } from './components/log/log.component';
-import { HomeComponent } from './components/home/home.component';
+import {MapComponent} from './components/map/map.component';
+import {LogComponent} from "./components/log/log.component";
+import {HomeComponent} from "./components/home/home.component";
 
 @NgModule({
   declarations: [

@@ -9,8 +9,8 @@ import {CityListComponent} from "./components/city-list/city-list.component";
 import {MarketComponent} from "./components/market/market.component";
 import {MissionComponent} from "./components/mission/mission.component";
 import {MapComponent} from "./components/map/map.component";
-import {LogComponent} from "./components/log/log.component";
 import {HomeComponent} from "./components/home/home.component";
+import {LogComponent} from "./components/log/log.component";
 
 const routes: Routes = [
   {path:"", component: HomeComponent},
@@ -23,7 +23,8 @@ const routes: Routes = [
   {path:"market", component: MarketComponent},
   {path:"mission", component: MissionComponent},
   {path:"map", component: MapComponent},
-  {path:"log", component: LogComponent}
+  {path:"log", component: LogComponent},
+
 ];
 
 @NgModule({

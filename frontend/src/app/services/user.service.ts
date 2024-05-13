@@ -41,11 +41,11 @@ export class UserService {
   roleReceiver():Observable<RoleSenderModel>{
     this.token = localStorage.getItem("token");
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
-    return this.http.get<RoleSenderModel>(BASE_URL + "/userrole", {headers});
+    return this.http.get<RoleSenderModel>(BASE_URL + "/userrole", {headers})
   }
   loglister():Observable<any>{
     this.token = localStorage.getItem("token");
     const headers = new HttpHeaders().set('Authorization', `Bearer ${this.token}`);
-    return this.http.get<Array<LogListModel>>(BASE_URL + "/logs", {headers});
+    return this.http.get<Array<LogListModel>>(BASE_URL + "/logs", {headers})
   }
 }
