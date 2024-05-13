@@ -93,7 +93,7 @@ public class ArmyService {
 
         long totalUnitCountEnemy = armyRepository.findUnitQuantity(enemyName) == null ? 0 : armyRepository.findUnitQuantity(enemyName);
 
-        long ownScoreLoss = 1;
+        long ownScoreLoss = 0;
         long enemyScoreLoss = 0;
 
         for (Legion legion : ownArmy) {
