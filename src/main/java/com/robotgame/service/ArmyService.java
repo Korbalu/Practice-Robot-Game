@@ -5,13 +5,9 @@ import com.robotgame.dto.outgoing.LegionListDTO;
 import com.robotgame.dto.outgoing.UnitListDTO;
 import com.robotgame.repository.ArmyRepository;
 import com.robotgame.repository.CityRepository;
-import com.robotgame.repository.CustomUserRepository;
 import com.robotgame.repository.LogRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -20,24 +16,23 @@ import java.util.*;
 public class ArmyService {
 
     private ArmyRepository armyRepository;
-    private CustomUserRepository customUserRepository;
-    private CityRepository cityRepository;
+    private CustomUserService customUserService;
+    private CityService cityService;
     private LogRepository logRepository;
     private static final Logger logger = LoggerFactory.getLogger(ArmyService.class);
 
-    public ArmyService(ArmyRepository armyRepository, CustomUserRepository customUserRepository, CityRepository cityRepository, LogRepository logRepository) {
+    public ArmyService(ArmyRepository armyRepository, CustomUserService customUserService,
+                       CityService cityService, LogRepository logRepository) {
         this.armyRepository = armyRepository;
-        this.customUserRepository = customUserRepository;
-        this.cityRepository = cityRepository;
+        this.customUserService = customUserService;
+        this.cityService = cityService;
         this.logRepository = logRepository;
     }
 
     public void increaseUnit(String unit, Long quantity) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetails loggedInUser = (UserDetails) authentication.getPrincipal();
-        CustomUser owner = customUserRepository.findByMail(loggedInUser.getUsername()).orElse(null);
+        CustomUser owner = customUserService.loggedInUserFinder();
 
-        City city = cityRepository.findByOwner(owner.getId()).orElse(null);
+        City city = cityService.cityFinderByOwner(owner.getId());
 
         Legion legion = armyRepository.findByOwnerAndType(owner.getId(), Unit.valueOf(unit));
 
@@ -56,19 +51,15 @@ public class ArmyService {
     }
 
     public List<LegionListDTO> armyLister() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetails loggedInUser = (UserDetails) authentication.getPrincipal();
-        CustomUser owner = customUserRepository.findByMail(loggedInUser.getUsername()).orElse(null);
+        CustomUser owner = customUserService.loggedInUserFinder();
 
         return armyRepository.findAllByOwner(owner.getId()).stream().map(LegionListDTO::new).toList();
     }
 
     public List<UnitListDTO> unitLister() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetails loggedInUser = (UserDetails) authentication.getPrincipal();
-        CustomUser owner = customUserRepository.findByMail(loggedInUser.getUsername()).orElse(null);
+        CustomUser owner = customUserService.loggedInUserFinder();
 
-        City city = cityRepository.findByOwner(owner.getId()).orElse(null);
+        City city = cityService.cityFinderByOwner(owner.getId());
 
         return Arrays.stream(Unit.values())
                 .filter(Unit::isBuyable)
@@ -79,16 +70,14 @@ public class ArmyService {
 
     public void unitScorer(String thingToScore, City city, Long quantity) {
         city.setScore(city.getScore() + Unit.valueOf(thingToScore).getScore() * quantity);
-        cityRepository.save(city);
+        cityService.citySaver(city);
     }
 
     public void battle(String enemyName, String attackType) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetails loggedInUser = (UserDetails) authentication.getPrincipal();
-        CustomUser owner = customUserRepository.findByMail(loggedInUser.getUsername()).orElse(null);
+        CustomUser owner = customUserService.loggedInUserFinder();
 
-        City ownCity = cityRepository.findByOwner(owner.getId()).orElse(null);
-        City enemyCity = cityRepository.findByOwnerName(enemyName).orElse(null);
+        City ownCity = cityService.cityFinderByOwner(owner.getId());
+        City enemyCity = cityService.cityFinderByOwnerName(enemyName);
 
         List<Legion> ownArmy = armyRepository.findAllByOwner(owner.getId()); //Sort from Repository side based on attack type, if it can be done, I couldn't
         ownArmy.sort(Comparator.comparing(legion -> legion.getType().getAttackType()));
@@ -219,7 +208,7 @@ public class ArmyService {
             finalScore += legion.getType().getScore() * legion.getQuantity();
         }
         city.setScore(finalScore);
-        cityRepository.save(city);
+        cityService.citySaver(city);
     }
 
     public void randomUnitIncreaser(City city, CustomUser owner) {
@@ -268,5 +257,19 @@ public class ArmyService {
                 armyRepository.save(legion);
             }
         }
+    }
+
+
+    public void legionSaver(Legion legion){
+        armyRepository.save(legion);
+    }
+    public void legionDeleter(Long amount){
+        armyRepository.deleteAllByQuantity(amount);
+    }
+    public Legion legionFinderByOwnerAndType(Long id, Unit unit){
+        return armyRepository.findByOwnerAndType(id, unit);
+    }
+    public List<Legion> legionsFinderByType(Unit unit){
+        return armyRepository.findALLByType(unit);
     }
 }

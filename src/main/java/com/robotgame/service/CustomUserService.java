@@ -84,4 +84,15 @@ public class CustomUserService {
         return roleSenderDTO;
     }
 
+
+
+    public CustomUser loggedInUserFinder(){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetails loggedInUser = (UserDetails) authentication.getPrincipal();
+        return customUserRepository.findByMail(loggedInUser.getUsername()).orElse(null);
+    }
+    public void userSaver(CustomUser customUser){
+        customUserRepository.save(customUser);
+    }
+
 }

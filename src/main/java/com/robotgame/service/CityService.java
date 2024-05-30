@@ -22,17 +22,16 @@ import java.util.stream.Collectors;
 public class CityService {
 
     private CityRepository cityRepository;
-    private CustomUserRepository customUserRepository;
-    private ArmyRepository armyRepository;
+    private CustomUserService customUserService;
     private ArmyService armyService;
 
     private PasswordEncoder passwordEncoder;
     private CounterEntityRepository counterEntityRepository;
 
-    public CityService(CityRepository cityRepository, CustomUserRepository customUserRepository, ArmyRepository armyRepository, ArmyService armyService, PasswordEncoder passwordEncoder, CounterEntityRepository counterEntityRepository) {
+    public CityService(CityRepository cityRepository, CustomUserService customUserService, ArmyService armyService,
+                       PasswordEncoder passwordEncoder, CounterEntityRepository counterEntityRepository) {
         this.cityRepository = cityRepository;
-        this.customUserRepository = customUserRepository;
-        this.armyRepository = armyRepository;
+        this.customUserService = customUserService;
         this.armyService = armyService;
         this.passwordEncoder = passwordEncoder;
         this.counterEntityRepository = counterEntityRepository;
@@ -52,9 +51,7 @@ public class CityService {
         city.setX((long) coordinates[0]);
         city.setY((long) coordinates[1]);
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetails loggedInUser = (UserDetails) authentication.getPrincipal();
-        CustomUser owner = customUserRepository.findByMail(loggedInUser.getUsername()).orElse(null);
+        CustomUser owner = customUserService.loggedInUserFinder();
         if (cityRepository.findByOwner(owner.getId()).isEmpty()) {
             city.setOwner(owner);
         }
@@ -62,9 +59,7 @@ public class CityService {
     }
 
     public CityDetailsDTO cityDetailer() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetails loggedInUser = (UserDetails) authentication.getPrincipal();
-        CustomUser owner = customUserRepository.findByMail(loggedInUser.getUsername()).orElse(null);
+        CustomUser owner = customUserService.loggedInUserFinder();
 
         City city = cityRepository.findByOwner(owner.getId()).orElse(null);
         long score = 0;
@@ -85,9 +80,7 @@ public class CityService {
     }
 
     public void builder(String building) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetails loggedInUser = (UserDetails) authentication.getPrincipal();
-        CustomUser owner = customUserRepository.findByMail(loggedInUser.getUsername()).orElse(null);
+        CustomUser owner = customUserService.loggedInUserFinder();
 
         City city = cityRepository.findByOwner(owner.getId()).orElse(null);
 
@@ -102,9 +95,7 @@ public class CityService {
     }
 
     public List<BuildingListDTO> buildingLister() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetails loggedInUser = (UserDetails) authentication.getPrincipal();
-        CustomUser owner = customUserRepository.findByMail(loggedInUser.getUsername()).orElse(null);
+        CustomUser owner = customUserService.loggedInUserFinder();
 
         City city = cityRepository.findByOwner(owner.getId()).orElse(null);
 
@@ -120,9 +111,7 @@ public class CityService {
     }
 
     public void newTurn() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetails loggedInUser = (UserDetails) authentication.getPrincipal();
-        CustomUser owner = customUserRepository.findByMail(loggedInUser.getUsername()).orElse(null);
+        CustomUser owner = customUserService.loggedInUserFinder();
 
         City city = cityRepository.findByOwner(owner.getId()).orElse(null);
 
@@ -148,7 +137,7 @@ public class CityService {
         armyService.scorer(city, owner);
         cityRepository.save(city);
         owner.setTurns(owner.getTurns() - 1);
-        customUserRepository.save(owner);
+        customUserService.userSaver(owner);
     }
 
     @Scheduled(cron = "0 17 0 * * ?")
@@ -165,12 +154,12 @@ public class CityService {
         }
         System.out.println("taxing done");
 
-        List<Legion> allLightBotLegions = armyRepository.findALLByType(Unit.LightBot);
+        List<Legion> allLightBotLegions = armyService.legionsFinderByType(Unit.LightBot);
         for (Legion lightBotLegion : allLightBotLegions) {
             lightBotLegion.setQuantity((long) (lightBotLegion.getQuantity() * 0.8));
             Legion legion2 = new Legion(Unit.LightBotUpg, (long) (lightBotLegion.getQuantity() * (1 - 0.8)), lightBotLegion.getRace(), lightBotLegion.getOwner());
-            armyRepository.save(lightBotLegion);
-            armyRepository.save(legion2);
+            armyService.legionSaver(lightBotLegion);
+            armyService.legionSaver(legion2);
             System.out.println("armies changed");
         }
     }
@@ -180,9 +169,7 @@ public class CityService {
     }
 
     public LoggedInUserDetailsDTO userDetailer() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetails loggedInUser = (UserDetails) authentication.getPrincipal();
-        CustomUser owner = customUserRepository.findByMail(loggedInUser.getUsername()).orElse(null);
+        CustomUser owner = customUserService.loggedInUserFinder();
 
         City city = cityRepository.findByOwner(owner.getId()).orElse(null);
 
@@ -207,7 +194,7 @@ public class CityService {
         autoUser.setCreatedAt(LocalDateTime.now());
         autoUser.setLastTimeTurnGiven(LocalDateTime.now());
         autoUser.setArmy(new ArrayList<>());
-        customUserRepository.save(autoUser);
+        customUserService.userSaver(autoUser);
 
         Random random = new Random();
         Race[] races = Race.values();
@@ -244,15 +231,16 @@ public class CityService {
             } else {
                 int unitIndex = random.nextInt(units.length);
                 String randomUnit = units[unitIndex].getDisplayName();
-                Legion legion = armyRepository.findByOwnerAndType(autoUser.getId(), Unit.valueOf(randomUnit));
+                //Legion legion = armyRepository.findByOwnerAndType(autoUser.getId(), Unit.valueOf(randomUnit));
+                Legion legion = armyService.legionFinderByOwnerAndType(autoUser.getId(), Unit.valueOf(randomUnit));
                 if (legion == null) {
                     Legion legion2 = new Legion(Unit.valueOf(randomUnit), 1L, city.getRace(), autoUser);
                     city.setVault(city.getVault() - Unit.valueOf(randomUnit).getCost());
-                    armyRepository.save(legion2);
+                    armyService.legionSaver(legion2);
                 } else {
                     city.setVault(city.getVault() - Unit.valueOf(randomUnit).getCost());
                     legion.setQuantity(legion.getQuantity() + 1L);
-                    armyRepository.save(legion);
+                    armyService.legionSaver(legion);
                 }
             }
             cityRepository.save(city);
@@ -312,7 +300,7 @@ public class CityService {
                 }
                 city.getOwner().setTurns(city.getOwner().getTurns() - 1);
                 cityRepository.save(city);
-                customUserRepository.save(city.getOwner());
+                customUserService.userSaver(city.getOwner());
             }
             scorer(city, city.getOwner());
         }
@@ -336,13 +324,14 @@ public class CityService {
         }
         boolean hasLightBot = owner.getArmy().stream().anyMatch(legion -> legion.getType() == Unit.LightBot);
         if (city.getFreeArea() == 0) {
-            Legion legion = armyRepository.findByOwnerAndType(owner.getId(), Unit.LightBot);
+            //Legion legion = armyRepository.findByOwnerAndType(owner.getId(), Unit.LightBot);
+            Legion legion = armyService.legionFinderByOwnerAndType(owner.getId(), Unit.LightBot);
             if (hasLightBot) {
                 city.setArea(city.getArea() + 1);
                 city.setFreeArea(city.getFreeArea() + 1);
                 legion.setQuantity(legion.getQuantity() - 1);
-                armyRepository.save(legion);
-                armyRepository.deleteAllByQuantity(0L);
+                armyService.legionSaver(legion);
+                armyService.legionDeleter(0L);
             } else {
                 armyService.unitAdder(city, owner, Unit.LightBot, legion);
             }
@@ -351,5 +340,16 @@ public class CityService {
             armyService.randomUnitIncreaser(city, owner);
         }
         cityRepository.save(city);
+    }
+
+
+    public void citySaver(City city){
+        cityRepository.save(city);
+    }
+    public City cityFinderByOwner(Long id){
+        return cityRepository.findByOwner(id).orElse(null);
+    }
+    public City cityFinderByOwnerName(String name){
+        return cityRepository.findByOwnerName(name).orElse(null);
     }
 }
