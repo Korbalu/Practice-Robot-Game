@@ -15,6 +15,7 @@ public class Log {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String header;
+    @Column(length = 555)
     private String log;
     private LocalDateTime createdAt;
     @ManyToOne

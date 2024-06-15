@@ -10,22 +10,19 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class LogService {
     private LogRepository logRepository;
-    private CustomUserRepository customUserRepository;
+    private CustomUserService customUserService;
 
-    public LogService(LogRepository logRepository, CustomUserRepository customUserRepository) {
+    public LogService(LogRepository logRepository, CustomUserService customUserService) {
         this.logRepository = logRepository;
-        this.customUserRepository = customUserRepository;
+        this.customUserService = customUserService;
     }
 
     public List<LogListDTO> logLister(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetails loggedInUser = (UserDetails) authentication.getPrincipal();
-        CustomUser owner = customUserRepository.findByMail(loggedInUser.getUsername()).orElse(null);
+        CustomUser owner = customUserService.loggedInUserFinder();
 
         return logRepository.findAllById(owner.getId()).stream().map(LogListDTO::new).toList();
     }

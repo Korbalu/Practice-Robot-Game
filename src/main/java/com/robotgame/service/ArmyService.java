@@ -16,23 +16,23 @@ import java.util.*;
 public class ArmyService {
 
     private ArmyRepository armyRepository;
+    private CityRepository cityRepository;
     private CustomUserService customUserService;
-    private CityService cityService;
     private LogRepository logRepository;
     private static final Logger logger = LoggerFactory.getLogger(ArmyService.class);
 
-    public ArmyService(ArmyRepository armyRepository, CustomUserService customUserService,
-                       CityService cityService, LogRepository logRepository) {
+    public ArmyService(ArmyRepository armyRepository, CityRepository cityRepository, CustomUserService customUserService,
+                       LogRepository logRepository) {
         this.armyRepository = armyRepository;
+        this.cityRepository = cityRepository;
         this.customUserService = customUserService;
-        this.cityService = cityService;
         this.logRepository = logRepository;
     }
 
     public void increaseUnit(String unit, Long quantity) {
         CustomUser owner = customUserService.loggedInUserFinder();
 
-        City city = cityService.cityFinderByOwner(owner.getId());
+        City city = cityRepository.findByOwner(owner.getId()).orElse(null);
 
         Legion legion = armyRepository.findByOwnerAndType(owner.getId(), Unit.valueOf(unit));
 
@@ -59,7 +59,7 @@ public class ArmyService {
     public List<UnitListDTO> unitLister() {
         CustomUser owner = customUserService.loggedInUserFinder();
 
-        City city = cityService.cityFinderByOwner(owner.getId());
+        City city = cityRepository.findByOwner(owner.getId()).orElse(null);
 
         return Arrays.stream(Unit.values())
                 .filter(Unit::isBuyable)
@@ -70,14 +70,14 @@ public class ArmyService {
 
     public void unitScorer(String thingToScore, City city, Long quantity) {
         city.setScore(city.getScore() + Unit.valueOf(thingToScore).getScore() * quantity);
-        cityService.citySaver(city);
+        cityRepository.save(city);
     }
 
     public void battle(String enemyName, String attackType) {
         CustomUser owner = customUserService.loggedInUserFinder();
 
-        City ownCity = cityService.cityFinderByOwner(owner.getId());
-        City enemyCity = cityService.cityFinderByOwnerName(enemyName);
+        City ownCity = cityRepository.findByOwner(owner.getId()).orElse(null);
+        City enemyCity = cityRepository.findByOwnerName(enemyName).orElse(null);
 
         List<Legion> ownArmy = armyRepository.findAllByOwner(owner.getId()); //Sort from Repository side based on attack type, if it can be done, I couldn't
         ownArmy.sort(Comparator.comparing(legion -> legion.getType().getAttackType()));
@@ -179,6 +179,7 @@ public class ArmyService {
         }
         Log attackerLog = new Log("Battle", new String(logBodyAttacker), owner);
         Log defenderLog = new Log("Battle", new String(logBodyDefender), enemyCity.getOwner());
+        System.out.println(attackerLog);
         logRepository.save(attackerLog);
         logRepository.save(defenderLog);
 
@@ -208,7 +209,7 @@ public class ArmyService {
             finalScore += legion.getType().getScore() * legion.getQuantity();
         }
         city.setScore(finalScore);
-        cityService.citySaver(city);
+        cityRepository.save(city);
     }
 
     public void randomUnitIncreaser(City city, CustomUser owner) {

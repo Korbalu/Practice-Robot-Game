@@ -20,10 +20,6 @@ export class MapComponent {
     this.cityService.cityLister().subscribe({
       next: (data) => {
         this.cities = data;
-        console.log(this.cities)
-        for (const city of this.cities) {
-          console.log(city.id + ":" + city.x + ":" + city.y)
-        }
       },
       error: err => {
         console.log(err)
@@ -44,7 +40,6 @@ export class MapComponent {
     for (const city of this.cities) {
       const {x, y} = city;
       this.map[y][x] = "x";
-      console.log("City at: " + this.map[y] + ":" + this.map[x])
     }
   }
 
