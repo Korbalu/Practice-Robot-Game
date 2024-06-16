@@ -1,9 +1,21 @@
-<div class="map-container" *ngIf="map">
-  <table>
-    <tr *ngFor="let row of map">
-      <td *ngFor="let cell of row">
-        <img class="map-image" src="{{getImage(cell)}}" alt="Pic">
-      </td>
-    </tr>
-  </table>
+<!--<div class="map-container" *ngIf="map">-->
+<!--  <table>-->
+<!--    <tr *ngFor="let row of map">-->
+<!--      <td *ngFor="let cell of row">-->
+<!--        <img class="map-image" src="{{getImage(cell)}}" alt="Pic">-->
+<!--      </td>-->
+<!--    </tr>-->
+<!--  </table>-->
+<!--</div>-->
+<div class="grid-container">
+  <img src="assets/WasteLand.jpg" class="background-image" alt="Background">
+
+  <div class="grid">
+    <div *ngFor="let city of cities"
+         class="grid-item"
+         [ngStyle]="{'grid-row': city.y + 1, 'grid-column': city.x + 1}">
+      <img src="assets/futCityPng.png" class="overlay-image" alt="City">
+    </div>
+  </div>
+
 </div>
